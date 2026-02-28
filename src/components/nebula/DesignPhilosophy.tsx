@@ -4,6 +4,8 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { PHILOSOPHY } from "@/lib/content";
 
+const CARD_COLORS = ["#ff2d7b", "#b44aff", "#4d7cff", "#ff44cc"];
+
 export default function DesignPhilosophy() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -32,7 +34,7 @@ export default function DesignPhilosophy() {
           className="absolute w-[400px] h-[400px] rounded-full opacity-[0.05]"
           style={{
             background:
-              "radial-gradient(circle, #00f0ff, transparent 70%)",
+              "radial-gradient(circle, #4d7cff, transparent 70%)",
             right: "10%",
             bottom: "20%",
             filter: "blur(80px)",
@@ -69,7 +71,7 @@ export default function DesignPhilosophy() {
           // Section 06
         </p>
         <h2
-          className="text-3xl sm:text-5xl font-bold neon-text-pink"
+          className="text-3xl sm:text-5xl font-bold gradient-text-glow"
           style={{ fontFamily: "var(--font-space-grotesk)" }}
         >
           THE NEBULA
@@ -84,54 +86,56 @@ export default function DesignPhilosophy() {
 
       {/* Philosophy cards */}
       <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10">
-        {PHILOSOPHY.map((item, i) => (
-          <motion.div
-            key={item.title}
-            className="glass-card rounded-xl p-8 cursor-default group"
-            style={{
-              perspective: "1000px",
-            }}
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.3 + i * 0.15 }}
-            whileHover={{
-              rotateX: -5,
-              rotateY: 5,
-              scale: 1.02,
-              transition: { duration: 0.3 },
-            }}
-          >
-            <div className="flex items-start gap-4">
-              <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0"
-                style={{
-                  background: `linear-gradient(135deg, ${
-                    ["#00f0ff", "#b44aff", "#ff2d7b", "#ff6b35"][i]
-                  }20, transparent)`,
-                  border: `1px solid ${
-                    ["#00f0ff", "#b44aff", "#ff2d7b", "#ff6b35"][i]
-                  }30`,
-                }}
-              >
-                {["01", "02", "03", "04"][i]}
-              </div>
-              <div>
-                <h3
-                  className="text-lg font-bold text-star-white mb-2 group-hover:text-neon-cyan transition-colors"
-                  style={{ fontFamily: "var(--font-space-grotesk)" }}
+        {PHILOSOPHY.map((item, i) => {
+          const color = CARD_COLORS[i % CARD_COLORS.length];
+          return (
+            <motion.div
+              key={item.title}
+              className="glass-card rounded-xl p-8 cursor-default group"
+              style={{
+                perspective: "1000px",
+              }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.3 + i * 0.15 }}
+              whileHover={{
+                rotateX: -5,
+                rotateY: 5,
+                scale: 1.02,
+                transition: { duration: 0.3 },
+              }}
+            >
+              <div className="flex items-start gap-4">
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0"
+                  style={{
+                    background: `linear-gradient(135deg, ${color}20, transparent)`,
+                    border: `1px solid ${color}30`,
+                    color: `${color}cc`,
+                  }}
                 >
-                  {item.title}
-                </h3>
-                <p
-                  className="text-xs text-star-white/50"
-                  style={{ fontFamily: "var(--font-jetbrains-mono)" }}
-                >
-                  {item.description}
-                </p>
+                  {["01", "02", "03", "04"][i]}
+                </div>
+                <div>
+                  <h3
+                    className="text-lg font-bold text-star-white mb-2 transition-colors"
+                    style={{
+                      fontFamily: "var(--font-space-grotesk)",
+                    }}
+                  >
+                    {item.title}
+                  </h3>
+                  <p
+                    className="text-xs text-star-white/50"
+                    style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+                  >
+                    {item.description}
+                  </p>
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Personal quote */}
@@ -146,7 +150,7 @@ export default function DesignPhilosophy() {
           style={{ fontFamily: "var(--font-space-grotesk)" }}
         >
           &ldquo;I don&apos;t just design interfaces.{" "}
-          <span className="neon-text-cyan font-semibold">
+          <span className="gradient-text-glow font-semibold">
             I build the universes
           </span>{" "}
           people live in every day.&rdquo;

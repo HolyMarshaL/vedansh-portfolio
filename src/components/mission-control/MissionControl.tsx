@@ -23,13 +23,13 @@ export default function MissionControl() {
         transition={{ duration: 0.8 }}
       >
         <p
-          className="text-[10px] tracking-[0.4em] text-neon-cyan/40 uppercase mb-2"
+          className="text-[10px] tracking-[0.4em] text-neon-purple/40 uppercase mb-2"
           style={{ fontFamily: "var(--font-jetbrains-mono)" }}
         >
           // Section 02
         </p>
         <h2
-          className="text-3xl sm:text-5xl font-bold neon-text-cyan"
+          className="text-3xl sm:text-5xl font-bold gradient-text-glow"
           style={{ fontFamily: "var(--font-space-grotesk)" }}
         >
           MISSION CONTROL
@@ -60,9 +60,9 @@ export default function MissionControl() {
               }}
             >
               {/* Placeholder avatar */}
-              <div className="w-full h-full bg-gradient-to-br from-neon-cyan/20 via-nebula-blue to-neon-purple/20 flex items-center justify-center">
+              <div className="w-full h-full bg-gradient-to-br from-neon-pink/20 via-nebula-blue to-neon-purple/20 flex items-center justify-center">
                 <span
-                  className="text-6xl font-bold text-neon-cyan/30"
+                  className="text-6xl font-bold gradient-text"
                   style={{ fontFamily: "var(--font-space-grotesk)" }}
                 >
                   VC
@@ -71,7 +71,7 @@ export default function MissionControl() {
 
               {/* Scan line overlay */}
               <motion.div
-                className="absolute inset-0 bg-gradient-to-b from-neon-cyan/5 to-transparent"
+                className="absolute inset-0 bg-gradient-to-b from-neon-purple/5 to-transparent"
                 animate={{ y: ["-100%", "100%"] }}
                 transition={{
                   duration: 3,
@@ -89,7 +89,7 @@ export default function MissionControl() {
                 clipPath:
                   "polygon(25% 0%, 75% 0%, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0% 75%, 0% 25%)",
                 boxShadow:
-                  "0 0 15px rgba(0,240,255,0.3), inset 0 0 15px rgba(0,240,255,0.1)",
+                  "0 0 15px rgba(180,74,255,0.3), inset 0 0 15px rgba(255,45,123,0.1)",
               }}
             />
           </div>
@@ -102,9 +102,9 @@ export default function MissionControl() {
             transition={{ duration: 0.8, delay: 0.6 }}
           >
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 rounded-full bg-neon-cyan/60" />
+              <div className="w-2 h-2 rounded-full bg-neon-pink/60" />
               <p
-                className="text-[9px] tracking-[0.3em] text-neon-cyan/40 uppercase"
+                className="text-[9px] tracking-[0.3em] text-neon-purple/40 uppercase"
                 style={{ fontFamily: "var(--font-jetbrains-mono)" }}
               >
                 commander_brief.log
@@ -134,6 +134,7 @@ export default function MissionControl() {
               suffix={stat.suffix}
               label={stat.label}
               delay={i * 200}
+              colorIndex={i}
             />
           ))}
         </motion.div>
@@ -141,7 +142,7 @@ export default function MissionControl() {
 
       {/* Bottom decorative line */}
       <motion.div
-        className="mt-24 mx-auto h-[1px] bg-gradient-to-r from-transparent via-neon-cyan/20 to-transparent"
+        className="mt-24 mx-auto h-[1px] bg-gradient-to-r from-transparent via-neon-purple/20 to-transparent"
         initial={{ width: 0 }}
         animate={isInView ? { width: "80%" } : {}}
         transition={{ duration: 2, delay: 1 }}

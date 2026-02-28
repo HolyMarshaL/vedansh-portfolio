@@ -31,7 +31,7 @@ export default function ProjectSolarSystem() {
           // Section 05
         </p>
         <h2
-          className="text-3xl sm:text-5xl font-bold neon-text-orange"
+          className="text-3xl sm:text-5xl font-bold gradient-text-glow"
           style={{ fontFamily: "var(--font-space-grotesk)" }}
         >
           WORLDS I&apos;VE BUILT

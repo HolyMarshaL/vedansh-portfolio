@@ -29,13 +29,13 @@ export default function Contact() {
         transition={{ duration: 0.8 }}
       >
         <p
-          className="text-[10px] tracking-[0.4em] text-neon-cyan/40 uppercase mb-2"
+          className="text-[10px] tracking-[0.4em] text-neon-purple/40 uppercase mb-2"
           style={{ fontFamily: "var(--font-jetbrains-mono)" }}
         >
           // Section 07
         </p>
         <h2
-          className="text-3xl sm:text-5xl font-bold neon-text-cyan"
+          className="text-3xl sm:text-5xl font-bold gradient-text-glow"
           style={{ fontFamily: "var(--font-space-grotesk)" }}
         >
           ESTABLISH CONTACT
@@ -58,10 +58,10 @@ export default function Contact() {
           transition={{ duration: 0.8, delay: 0.3 }}
         >
           {/* Terminal header */}
-          <div className="flex items-center gap-2 mb-6 pb-3 border-b border-neon-cyan/10">
+          <div className="flex items-center gap-2 mb-6 pb-3 border-b border-neon-purple/10">
             <div className="w-2 h-2 rounded-full bg-neon-pink/60" />
             <div className="w-2 h-2 rounded-full bg-neon-orange/60" />
-            <div className="w-2 h-2 rounded-full bg-neon-cyan/60" />
+            <div className="w-2 h-2 rounded-full bg-neon-purple/60" />
             <span
               className="text-[9px] text-star-white/30 ml-2 tracking-wider"
               style={{ fontFamily: "var(--font-jetbrains-mono)" }}
@@ -77,7 +77,7 @@ export default function Contact() {
             ].map((field) => (
               <div key={field.name}>
                 <label
-                  className="block text-[9px] tracking-[0.3em] text-neon-cyan/40 uppercase mb-2"
+                  className="block text-[9px] tracking-[0.3em] text-neon-purple/40 uppercase mb-2"
                   style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                 >
                   {field.label}
@@ -86,8 +86,8 @@ export default function Contact() {
                   type={field.type}
                   name={field.name}
                   required
-                  className="w-full bg-transparent border-b border-neon-cyan/20 text-star-white/90 text-sm py-2 px-1
-                    focus:outline-none focus:border-neon-cyan/60 transition-colors
+                  className="w-full bg-transparent border-b border-neon-purple/20 text-star-white/90 text-sm py-2 px-1
+                    focus:outline-none focus:border-neon-pink/60 transition-colors
                     placeholder:text-star-white/15"
                   style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                   placeholder={`Enter ${field.name}...`}
@@ -97,7 +97,7 @@ export default function Contact() {
 
             <div>
               <label
-                className="block text-[9px] tracking-[0.3em] text-neon-cyan/40 uppercase mb-2"
+                className="block text-[9px] tracking-[0.3em] text-neon-purple/40 uppercase mb-2"
                 style={{ fontFamily: "var(--font-jetbrains-mono)" }}
               >
                 FREQ_03 // MESSAGE
@@ -106,8 +106,8 @@ export default function Contact() {
                 name="message"
                 rows={4}
                 required
-                className="w-full bg-transparent border border-neon-cyan/10 rounded-lg text-star-white/90 text-sm py-2 px-3
-                  focus:outline-none focus:border-neon-cyan/40 transition-colors resize-none
+                className="w-full bg-transparent border border-neon-purple/10 rounded-lg text-star-white/90 text-sm py-2 px-3
+                  focus:outline-none focus:border-neon-pink/40 transition-colors resize-none
                   placeholder:text-star-white/15"
                 style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                 placeholder="Your transmission..."
@@ -122,13 +122,13 @@ export default function Contact() {
               style={{
                 fontFamily: "var(--font-jetbrains-mono)",
                 background: submitted
-                  ? "rgba(0,240,255,0.1)"
-                  : "rgba(0,240,255,0.15)",
-                border: "1px solid rgba(0,240,255,0.3)",
-                color: "#00f0ff",
+                  ? "rgba(255,45,123,0.1)"
+                  : "linear-gradient(135deg, rgba(255,45,123,0.2), rgba(180,74,255,0.2))",
+                border: "1px solid rgba(255,45,123,0.3)",
+                color: "#ff2d7b",
                 boxShadow: submitted
                   ? "none"
-                  : "0 0 15px rgba(0,240,255,0.1)",
+                  : "0 0 15px rgba(255,45,123,0.1)",
               }}
             >
               {submitted ? "TRANSMISSION SENT" : "TRANSMIT \u2192"}
@@ -146,25 +146,29 @@ export default function Contact() {
             >
               <div className="text-center">
                 {/* Radio wave animation */}
-                {[0, 1, 2].map((i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-neon-cyan/30"
-                    initial={{ width: 20, height: 20, opacity: 0.8 }}
-                    animate={{
-                      width: [20, 200 + i * 60],
-                      height: [20, 200 + i * 60],
-                      opacity: [0.8, 0],
-                    }}
-                    transition={{
-                      duration: 2,
-                      delay: i * 0.3,
-                      repeat: Infinity,
-                    }}
-                  />
-                ))}
+                {[0, 1, 2].map((i) => {
+                  const ringColors = ["#ff2d7b", "#b44aff", "#4d7cff"];
+                  return (
+                    <motion.div
+                      key={i}
+                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+                      style={{ border: `1px solid ${ringColors[i]}40` }}
+                      initial={{ width: 20, height: 20, opacity: 0.8 }}
+                      animate={{
+                        width: [20, 200 + i * 60],
+                        height: [20, 200 + i * 60],
+                        opacity: [0.8, 0],
+                      }}
+                      transition={{
+                        duration: 2,
+                        delay: i * 0.3,
+                        repeat: Infinity,
+                      }}
+                    />
+                  );
+                })}
                 <motion.p
-                  className="text-xl font-bold neon-text-cyan relative z-10"
+                  className="text-xl font-bold neon-text-pink relative z-10"
                   style={{ fontFamily: "var(--font-space-grotesk)" }}
                   initial={{ scale: 0.8 }}
                   animate={{ scale: 1 }}
@@ -197,10 +201,10 @@ export default function Contact() {
           </p>
 
           {[
-            { label: "EMAIL", value: SOCIALS.email, href: `mailto:${SOCIALS.email}`, color: "#00f0ff" },
+            { label: "EMAIL", value: SOCIALS.email, href: `mailto:${SOCIALS.email}`, color: "#ff2d7b" },
             { label: "BEHANCE", value: "Behance Portfolio", href: SOCIALS.behance, color: "#b44aff" },
-            { label: "LINKEDIN", value: "LinkedIn Profile", href: SOCIALS.linkedin, color: "#00f0ff" },
-            { label: "INSTAGRAM", value: "Instagram", href: SOCIALS.instagram, color: "#ff2d7b" },
+            { label: "LINKEDIN", value: "LinkedIn Profile", href: SOCIALS.linkedin, color: "#4d7cff" },
+            { label: "INSTAGRAM", value: "Instagram", href: SOCIALS.instagram, color: "#ff44cc" },
           ].map((social, i) => (
             <motion.a
               key={social.label}

@@ -31,7 +31,7 @@ export default function ExperienceTimeline() {
           // Section 04
         </p>
         <h2
-          className="text-3xl sm:text-5xl font-bold neon-text-purple"
+          className="text-3xl sm:text-5xl font-bold gradient-text-glow"
           style={{ fontFamily: "var(--font-space-grotesk)" }}
         >
           THE VOYAGE
@@ -48,7 +48,7 @@ export default function ExperienceTimeline() {
       <div className="max-w-4xl mx-auto relative">
         {/* Central line */}
         <motion.div
-          className="absolute left-6 sm:left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-neon-purple/50 via-neon-cyan/30 to-neon-purple/50"
+          className="absolute left-6 sm:left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-neon-pink/50 via-neon-purple/30 to-neon-blue/50"
           initial={{ scaleY: 0 }}
           animate={isInView ? { scaleY: 1 } : {}}
           transition={{ duration: 2, delay: 0.3 }}
@@ -58,8 +58,8 @@ export default function ExperienceTimeline() {
         {/* Traveling light dot */}
         {isInView && (
           <motion.div
-            className="absolute left-6 sm:left-1/2 w-2 h-2 -ml-1 rounded-full bg-neon-cyan"
-            style={{ boxShadow: "0 0 10px rgba(0,240,255,0.8)" }}
+            className="absolute left-6 sm:left-1/2 w-2 h-2 -ml-1 rounded-full bg-neon-pink"
+            style={{ boxShadow: "0 0 10px rgba(255,45,123,0.8)" }}
             animate={{ top: ["0%", "100%"] }}
             transition={{
               duration: 8,
@@ -137,11 +137,20 @@ export default function ExperienceTimeline() {
                 }`}
               >
                 <motion.div
-                  className="glass-card rounded-lg p-6 cursor-pointer transition-all duration-300 hover:neon-box-purple"
+                  className="glass-card rounded-lg p-6 cursor-pointer transition-all duration-300"
                   onClick={() =>
                     setActivePortal(activePortal === exp.id ? null : exp.id)
                   }
                   whileHover={{ y: -4 }}
+                  style={{
+                    ["--hover-color" as string]: exp.color,
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.boxShadow = `0 0 5px ${exp.color}40, 0 0 10px ${exp.color}20`;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.boxShadow = "none";
+                  }}
                 >
                   <p
                     className="text-[9px] tracking-[0.3em] uppercase mb-1"

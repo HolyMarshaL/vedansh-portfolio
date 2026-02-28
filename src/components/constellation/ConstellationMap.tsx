@@ -4,6 +4,15 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { SKILLS } from "@/lib/content";
 
+const CONSTELLATION_COLORS = [
+  "#ff2d7b",
+  "#b44aff",
+  "#4d7cff",
+  "#ff44cc",
+  "#ff6b35",
+  "#4d7cff",
+];
+
 const CONSTELLATION_POSITIONS: Record<
   string,
   { x: number; y: number; stars: Array<{ x: number; y: number }> }
@@ -101,13 +110,13 @@ export default function ConstellationMap() {
         transition={{ duration: 0.8 }}
       >
         <p
-          className="text-[10px] tracking-[0.4em] text-neon-cyan/40 uppercase mb-2"
+          className="text-[10px] tracking-[0.4em] text-neon-purple/40 uppercase mb-2"
           style={{ fontFamily: "var(--font-jetbrains-mono)" }}
         >
           // Section 03
         </p>
         <h2
-          className="text-3xl sm:text-5xl font-bold neon-text-cyan"
+          className="text-3xl sm:text-5xl font-bold gradient-text-glow"
           style={{ fontFamily: "var(--font-space-grotesk)" }}
         >
           CONSTELLATION MAP
@@ -128,13 +137,11 @@ export default function ConstellationMap() {
         transition={{ delay: 0.5 }}
       >
         <p
-          className="text-xs tracking-[0.3em] text-neon-cyan/50"
+          className="text-xs tracking-[0.3em] text-neon-purple/50"
           style={{ fontFamily: "var(--font-jetbrains-mono)" }}
         >
           CONSTELLATIONS DISCOVERED:{" "}
-          <span className="text-neon-cyan font-bold">
-            {discovered.size}
-          </span>
+          <span className="text-neon-pink font-bold">{discovered.size}</span>
           /6
         </p>
       </motion.div>
@@ -166,6 +173,9 @@ export default function ConstellationMap() {
           const pos = CONSTELLATION_POSITIONS[key];
           const isActive = activeConstellation === key;
           const isDiscoveredItem = discovered.has(key);
+          const color = CONSTELLATION_COLORS[index % CONSTELLATION_COLORS.length];
+          const dimColor = `${color}80`;
+          const veryDimColor = `${color}40`;
 
           return (
             <motion.div
@@ -196,7 +206,7 @@ export default function ConstellationMap() {
                       y1={(star.y - pos.y) * 10}
                       x2={(next.x - pos.x) * 10}
                       y2={(next.y - pos.y) * 10}
-                      stroke={isDiscoveredItem ? "#00f0ff" : "#00f0ff40"}
+                      stroke={isDiscoveredItem ? color : veryDimColor}
                       strokeWidth={0.5}
                       initial={{ pathLength: 0 }}
                       animate={isInView ? { pathLength: 1 } : {}}
@@ -212,7 +222,7 @@ export default function ConstellationMap() {
                     cx={(star.x - pos.x) * 10}
                     cy={(star.y - pos.y) * 10}
                     r={isActive ? 4 : 2.5}
-                    fill={isDiscoveredItem ? "#00f0ff" : "#00f0ff80"}
+                    fill={isDiscoveredItem ? color : dimColor}
                     animate={{
                       r: isActive ? [3, 5, 3] : [2, 3, 2],
                       opacity: [0.6, 1, 0.6],
@@ -237,9 +247,9 @@ export default function ConstellationMap() {
                   className="text-[9px] sm:text-[10px] tracking-[0.2em] uppercase transition-colors duration-300"
                   style={{
                     fontFamily: "var(--font-jetbrains-mono)",
-                    color: isActive ? "#00f0ff" : "#00f0ff50",
+                    color: isActive ? color : `${color}50`,
                     textShadow: isActive
-                      ? "0 0 10px rgba(0,240,255,0.5)"
+                      ? `0 0 10px ${color}80`
                       : "none",
                   }}
                 >
@@ -255,16 +265,21 @@ export default function ConstellationMap() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0 }}
                   style={{
-                    border: "1px solid rgba(0,240,255,0.2)",
-                    boxShadow: "0 0 20px rgba(0,240,255,0.1)",
+                    border: `1px solid ${color}30`,
+                    boxShadow: `0 0 20px ${color}15`,
                   }}
                 >
                   <div className="flex flex-wrap gap-2">
                     {data.skills.map((skill) => (
                       <span
                         key={skill}
-                        className="px-2 py-1 text-[9px] rounded-md text-neon-cyan/80 border border-neon-cyan/20 bg-neon-cyan/5"
-                        style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+                        className="px-2 py-1 text-[9px] rounded-md"
+                        style={{
+                          fontFamily: "var(--font-jetbrains-mono)",
+                          color: `${color}cc`,
+                          border: `1px solid ${color}30`,
+                          background: `${color}08`,
+                        }}
                       >
                         {skill}
                       </span>

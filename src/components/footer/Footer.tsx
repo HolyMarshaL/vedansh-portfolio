@@ -7,12 +7,12 @@ export default function Footer() {
   const stardate = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, "0")}.${String(now.getDate()).padStart(2, "0")}`;
 
   return (
-    <footer className="relative py-16 px-6 sm:px-12 border-t border-neon-cyan/5">
+    <footer className="relative py-16 px-6 sm:px-12 border-t border-neon-purple/5">
       <div className="max-w-4xl mx-auto text-center">
         {/* Back to top */}
         <motion.button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="mb-8 text-xs tracking-[0.3em] text-neon-cyan/30 hover:text-neon-cyan/70 uppercase transition-colors"
+          className="mb-8 text-xs tracking-[0.3em] text-neon-pink/30 hover:text-neon-pink/70 uppercase transition-colors"
           style={{ fontFamily: "var(--font-jetbrains-mono)" }}
           whileHover={{ y: -3 }}
         >
@@ -25,13 +25,13 @@ export default function Footer() {
             style={{ fontFamily: "var(--font-jetbrains-mono)" }}
           >
             Designed & Built by{" "}
-            <span className="text-neon-cyan/50">Vedansh Chauhan</span>
+            <span className="gradient-text">Vedansh Chauhan</span>
           </p>
           <p
             className="text-[10px] text-star-white/15 tracking-wider"
             style={{ fontFamily: "var(--font-jetbrains-mono)" }}
           >
-            Powered by ambition and way too much coffee
+            Powered by ambition and an unhealthy amount of coffee
           </p>
           <p
             className="text-[9px] text-star-white/10 tracking-[0.3em]"

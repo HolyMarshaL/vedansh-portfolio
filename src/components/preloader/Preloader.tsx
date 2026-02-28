@@ -20,8 +20,17 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   const [phase, setPhase] = useState<Phase>("question");
   const [countdown, setCountdown] = useState(5);
   const [terminalLines, setTerminalLines] = useState<string[]>([]);
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
+  const [particles, setParticles] = useState<
+    Array<{ id: number; x: number; y: number; delay: number; color: string }>
+  >([]);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const PARTICLE_COLORS = [
+    "rgba(255,45,123,0.3)",
+    "rgba(180,74,255,0.3)",
+    "rgba(77,124,255,0.3)",
+    "rgba(255,68,204,0.3)",
+  ];
 
   // Generate floating particles on mount
   useEffect(() => {
@@ -30,14 +39,13 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       x: Math.random() * 100,
       y: Math.random() * 100,
       delay: Math.random() * 5,
+      color: PARTICLE_COLORS[i % PARTICLE_COLORS.length],
     }));
     setParticles(pts);
   }, []);
 
   const handleYesClick = useCallback(() => {
     setPhase("response");
-
-    // After "You're cool. Kinda crazy!" shows, transition to countdown
     setTimeout(() => {
       setPhase("countdown");
     }, 2500);
@@ -47,20 +55,17 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   useEffect(() => {
     if (phase !== "countdown") return;
 
-    // Start showing terminal lines
     TERMINAL_LINES.forEach((line, i) => {
       setTimeout(() => {
         setTerminalLines((prev) => [...prev, line]);
       }, i * 400);
     });
 
-    // Start countdown after a brief pause
     const startDelay = setTimeout(() => {
       intervalRef.current = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
             if (intervalRef.current) clearInterval(intervalRef.current);
-            // Trigger warp phase
             setTimeout(() => setPhase("warp"), 300);
             return 0;
           }
@@ -99,8 +104,8 @@ export default function Preloader({ onComplete }: PreloaderProps) {
           {particles.map((p) => (
             <motion.div
               key={p.id}
-              className="absolute w-[2px] h-[2px] rounded-full bg-neon-cyan/30"
-              style={{ left: `${p.x}%`, top: `${p.y}%` }}
+              className="absolute w-[2px] h-[2px] rounded-full"
+              style={{ left: `${p.x}%`, top: `${p.y}%`, background: p.color }}
               animate={{
                 y: [0, -30, 0],
                 opacity: [0.2, 0.6, 0.2],
@@ -133,9 +138,13 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.5 }}
               >
-                <span className="text-star-white">Are you ready to go on an</span>
+                <span className="text-star-white">
+                  Are you ready to go on an
+                </span>
                 <br />
-                <span className="neon-text-cyan font-semibold">epic adventure</span>
+                <span className="gradient-text-glow font-semibold">
+                  epic adventure
+                </span>
                 <span className="text-star-white">?</span>
               </motion.h1>
 
@@ -147,29 +156,49 @@ export default function Preloader({ onComplete }: PreloaderProps) {
               >
                 <button
                   onClick={handleYesClick}
-                  className="group relative px-10 py-4 text-lg font-semibold text-space-black bg-neon-cyan rounded-lg
+                  className="group relative px-10 py-4 text-lg font-semibold text-space-black rounded-lg
                     transition-all duration-300 hover:scale-105 active:scale-95
-                    hover:shadow-[0_0_20px_rgba(0,240,255,0.5),0_0_40px_rgba(0,240,255,0.3)]"
-                  style={{ fontFamily: "var(--font-space-grotesk)" }}
+                    hover:shadow-[0_0_20px_rgba(255,45,123,0.5),0_0_40px_rgba(180,74,255,0.3)]"
+                  style={{
+                    fontFamily: "var(--font-space-grotesk)",
+                    background:
+                      "linear-gradient(135deg, #ff2d7b, #b44aff)",
+                  }}
                 >
                   <span className="relative z-10">YES</span>
                   <motion.div
-                    className="absolute inset-0 rounded-lg bg-neon-cyan"
+                    className="absolute inset-0 rounded-lg"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #ff2d7b, #b44aff)",
+                    }}
                     animate={{ opacity: [0.5, 1, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
                   />
                 </button>
 
                 <button
                   onClick={handleYesClick}
-                  className="group relative px-10 py-4 text-lg font-semibold text-space-black bg-neon-cyan rounded-lg
+                  className="group relative px-10 py-4 text-lg font-semibold text-space-black rounded-lg
                     transition-all duration-300 hover:scale-105 active:scale-95
-                    hover:shadow-[0_0_20px_rgba(0,240,255,0.5),0_0_40px_rgba(0,240,255,0.3)]"
-                  style={{ fontFamily: "var(--font-space-grotesk)" }}
+                    hover:shadow-[0_0_20px_rgba(180,74,255,0.5),0_0_40px_rgba(77,124,255,0.3)]"
+                  style={{
+                    fontFamily: "var(--font-space-grotesk)",
+                    background:
+                      "linear-gradient(135deg, #b44aff, #4d7cff)",
+                  }}
                 >
                   <span className="relative z-10">YES</span>
                   <motion.div
-                    className="absolute inset-0 rounded-lg bg-neon-cyan"
+                    className="absolute inset-0 rounded-lg"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #b44aff, #4d7cff)",
+                    }}
                     animate={{ opacity: [0.5, 1, 0.5] }}
                     transition={{
                       duration: 2,
@@ -194,7 +223,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
               transition={{ duration: 0.6 }}
             >
               <motion.p
-                className="text-3xl sm:text-5xl md:text-6xl font-bold neon-text-cyan"
+                className="text-3xl sm:text-5xl md:text-6xl font-bold neon-text-pink"
                 style={{ fontFamily: "var(--font-space-grotesk)" }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -231,7 +260,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                 transition={{ duration: 0.5 }}
               >
                 <p
-                  className="text-xs sm:text-sm tracking-[0.3em] text-neon-cyan/60 uppercase"
+                  className="text-xs sm:text-sm tracking-[0.3em] text-neon-purple/60 uppercase"
                   style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                 >
                   Mission: VEDANSH.SPACE
@@ -254,7 +283,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
               >
                 {countdown > 0 ? (
                   <span
-                    className="text-[20vw] sm:text-[15vw] font-bold leading-none neon-text-cyan"
+                    className="text-[20vw] sm:text-[15vw] font-bold leading-none gradient-text-glow"
                     style={{ fontFamily: "var(--font-space-grotesk)" }}
                   >
                     T-{countdown}
@@ -274,7 +303,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                 {/* Pulse rings on each count */}
                 <motion.div
                   key={`ring-${countdown}`}
-                  className="absolute inset-0 rounded-full border-2 border-neon-cyan/30"
+                  className="absolute inset-0 rounded-full border-2 border-neon-pink/30"
                   initial={{ scale: 0.8, opacity: 0.8 }}
                   animate={{ scale: 3, opacity: 0 }}
                   transition={{ duration: 1, ease: "easeOut" }}
@@ -289,7 +318,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                 {terminalLines.map((line, i) => (
                   <motion.p
                     key={i}
-                    className="text-[10px] sm:text-xs text-neon-cyan/50"
+                    className="text-[10px] sm:text-xs text-neon-purple/50"
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: i * 0.1 }}
@@ -313,17 +342,19 @@ export default function Preloader({ onComplete }: PreloaderProps) {
               {/* Warp lines */}
               {Array.from({ length: 60 }).map((_, i) => {
                 const angle = (i / 60) * 360;
-                const rad = (angle * Math.PI) / 180;
+                const colors = ["#ff2d7b", "#b44aff", "#4d7cff", "#ff44cc"];
+                const color = colors[i % colors.length];
                 return (
                   <motion.div
                     key={i}
-                    className="absolute h-[1px] bg-gradient-to-r from-neon-cyan via-neon-purple to-transparent"
+                    className="absolute h-[1px]"
                     style={{
                       width: "2px",
                       left: "50%",
                       top: "50%",
                       transformOrigin: "left center",
                       rotate: `${angle}deg`,
+                      background: `linear-gradient(90deg, ${color}, transparent)`,
                     }}
                     initial={{ width: "2px", opacity: 0 }}
                     animate={{

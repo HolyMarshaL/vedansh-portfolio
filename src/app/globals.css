@@ -3,12 +3,14 @@
 @theme inline {
   --color-space-black: #06060a;
   --color-space-navy: #0d1117;
-  --color-neon-cyan: #00f0ff;
-  --color-neon-purple: #b44aff;
   --color-neon-pink: #ff2d7b;
+  --color-neon-purple: #b44aff;
+  --color-neon-blue: #4d7cff;
+  --color-neon-magenta: #ff44cc;
   --color-neon-orange: #ff6b35;
   --color-star-white: #f0f0ff;
   --color-nebula-blue: #1a1a3e;
+  --color-neon-cyan: #00f0ff;
 
   --font-heading: var(--font-space-grotesk);
   --font-mono: var(--font-jetbrains-mono);
@@ -34,18 +36,58 @@ body {
   background: var(--color-space-black);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-neon-cyan);
+  background: var(--color-neon-pink);
   border-radius: 2px;
 }
 
+/* ===== ANIMATED GRADIENT TEXT ===== */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-text {
+  background: linear-gradient(
+    270deg,
+    #ff2d7b,
+    #b44aff,
+    #4d7cff,
+    #ff44cc,
+    #ff2d7b
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 8s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-glow {
+  background: linear-gradient(
+    270deg,
+    #ff2d7b,
+    #b44aff,
+    #4d7cff,
+    #ff44cc,
+    #ff2d7b
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 8s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 8px rgba(255,45,123,0.4)) drop-shadow(0 0 16px rgba(180,74,255,0.3));
+}
+
 /* ===== NEON GLOW UTILITIES ===== */
-.neon-text-cyan {
-  color: var(--color-neon-cyan);
+.neon-text-pink {
+  color: var(--color-neon-pink);
   text-shadow:
-    0 0 7px var(--color-neon-cyan),
-    0 0 10px var(--color-neon-cyan),
-    0 0 21px var(--color-neon-cyan),
-    0 0 42px #0fa;
+    0 0 7px var(--color-neon-pink),
+    0 0 10px var(--color-neon-pink),
+    0 0 21px var(--color-neon-pink),
+    0 0 42px #ff44cc;
 }
 
 .neon-text-purple {
@@ -56,12 +98,20 @@ body {
     0 0 21px var(--color-neon-purple);
 }
 
-.neon-text-pink {
-  color: var(--color-neon-pink);
+.neon-text-blue {
+  color: var(--color-neon-blue);
   text-shadow:
-    0 0 7px var(--color-neon-pink),
-    0 0 10px var(--color-neon-pink),
-    0 0 21px var(--color-neon-pink);
+    0 0 7px var(--color-neon-blue),
+    0 0 10px var(--color-neon-blue),
+    0 0 21px var(--color-neon-blue);
+}
+
+.neon-text-magenta {
+  color: var(--color-neon-magenta);
+  text-shadow:
+    0 0 7px var(--color-neon-magenta),
+    0 0 10px var(--color-neon-magenta),
+    0 0 21px var(--color-neon-magenta);
 }
 
 .neon-text-orange {
@@ -72,11 +122,20 @@ body {
     0 0 21px var(--color-neon-orange);
 }
 
-.neon-box-cyan {
-  box-shadow:
-    0 0 5px var(--color-neon-cyan),
+/* Keep cyan for backward compat but it's secondary now */
+.neon-text-cyan {
+  color: var(--color-neon-cyan);
+  text-shadow:
+    0 0 7px var(--color-neon-cyan),
     0 0 10px var(--color-neon-cyan),
-    inset 0 0 5px rgba(0, 240, 255, 0.1);
+    0 0 21px var(--color-neon-cyan);
+}
+
+.neon-box-pink {
+  box-shadow:
+    0 0 5px var(--color-neon-pink),
+    0 0 10px var(--color-neon-pink),
+    inset 0 0 5px rgba(255, 45, 123, 0.1);
 }
 
 .neon-box-purple {
@@ -84,6 +143,13 @@ body {
     0 0 5px var(--color-neon-purple),
     0 0 10px var(--color-neon-purple),
     inset 0 0 5px rgba(180, 74, 255, 0.1);
+}
+
+.neon-box-cyan {
+  box-shadow:
+    0 0 5px var(--color-neon-cyan),
+    0 0 10px var(--color-neon-cyan),
+    inset 0 0 5px rgba(0, 240, 255, 0.1);
 }
 
 /* ===== GLITCH EFFECT ===== */
@@ -98,15 +164,6 @@ body {
 
 .glitch-text {
   animation: glitch 0.3s ease-in-out;
-}
-
-@keyframes glitch-clip {
-  0% { clip-path: inset(40% 0 61% 0); }
-  20% { clip-path: inset(92% 0 1% 0); }
-  40% { clip-path: inset(43% 0 1% 0); }
-  60% { clip-path: inset(25% 0 58% 0); }
-  80% { clip-path: inset(54% 0 7% 0); }
-  100% { clip-path: inset(58% 0 43% 0); }
 }
 
 /* ===== BREATHING ANIMATION ===== */
@@ -129,13 +186,6 @@ body {
   animation: pulse-ring 2s ease-out infinite;
 }
 
-/* ===== WARP SPEED ===== */
-@keyframes warp-line {
-  0% { transform: scaleX(0); opacity: 0; }
-  50% { opacity: 1; }
-  100% { transform: scaleX(50); opacity: 0; }
-}
-
 /* ===== TYPEWRITER ===== */
 @keyframes typewriter {
   from { width: 0; }
@@ -144,13 +194,13 @@ body {
 
 @keyframes blink-caret {
   from, to { border-color: transparent; }
-  50% { border-color: var(--color-neon-cyan); }
+  50% { border-color: var(--color-neon-pink); }
 }
 
 .typewriter {
   overflow: hidden;
   white-space: nowrap;
-  border-right: 2px solid var(--color-neon-cyan);
+  border-right: 2px solid var(--color-neon-pink);
   animation:
     typewriter 2s steps(40) forwards,
     blink-caret 0.75s step-end infinite;
@@ -165,8 +215,8 @@ body {
     0deg,
     transparent,
     transparent 2px,
-    rgba(0, 240, 255, 0.03) 2px,
-    rgba(0, 240, 255, 0.03) 4px
+    rgba(180, 74, 255, 0.03) 2px,
+    rgba(180, 74, 255, 0.03) 4px
   );
   pointer-events: none;
 }
@@ -174,8 +224,8 @@ body {
 /* ===== HUD GRID ===== */
 .hud-grid {
   background-image:
-    linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(180, 74, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180, 74, 255, 0.03) 1px, transparent 1px);
   background-size: 50px 50px;
 }
 
@@ -183,12 +233,12 @@ body {
 .glass-card {
   background: rgba(26, 26, 62, 0.4);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 240, 255, 0.15);
+  border: 1px solid rgba(180, 74, 255, 0.15);
 }
 
 /* ===== SELECTION ===== */
 ::selection {
-  background: rgba(0, 240, 255, 0.3);
+  background: rgba(255, 45, 123, 0.3);
   color: var(--color-star-white);
 }
 

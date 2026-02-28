@@ -7,12 +7,28 @@ interface TrailParticle {
   id: number;
   x: number;
   y: number;
+  color: string;
 }
+
+const TRAIL_COLORS = [
+  "rgba(255,45,123,0.8)",
+  "rgba(180,74,255,0.8)",
+  "rgba(77,124,255,0.7)",
+  "rgba(255,68,204,0.8)",
+];
+
+const TRAIL_SHADOWS = [
+  "0 0 6px 2px rgba(255,45,123,0.4)",
+  "0 0 6px 2px rgba(180,74,255,0.4)",
+  "0 0 6px 2px rgba(77,124,255,0.4)",
+  "0 0 6px 2px rgba(255,68,204,0.4)",
+];
 
 export default function CursorTrail() {
   const [trail, setTrail] = useState<TrailParticle[]>([]);
   const idCounter = useRef(0);
   const lastPos = useRef({ x: 0, y: 0 });
+  const colorIndex = useRef(0);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -20,14 +36,15 @@ export default function CursorTrail() {
       const dy = e.clientY - lastPos.current.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      // Only add particles when moving fast enough
       if (distance < 8) return;
 
       lastPos.current = { x: e.clientX, y: e.clientY };
+      const ci = colorIndex.current++ % TRAIL_COLORS.length;
       const newParticle: TrailParticle = {
         id: idCounter.current++,
         x: e.clientX,
         y: e.clientY,
+        color: TRAIL_COLORS[ci],
       };
 
       setTrail((prev) => [...prev.slice(-15), newParticle]);
@@ -51,23 +68,25 @@ export default function CursorTrail() {
   return (
     <div className="fixed inset-0 pointer-events-none z-50">
       <AnimatePresence>
-        {trail.map((particle) => (
-          <motion.div
-            key={particle.id}
-            className="absolute w-2 h-2 rounded-full"
-            style={{
-              left: particle.x - 4,
-              top: particle.y - 4,
-              background:
-                "radial-gradient(circle, rgba(0,240,255,0.8) 0%, rgba(0,240,255,0) 70%)",
-              boxShadow: "0 0 6px 2px rgba(0,240,255,0.4)",
-            }}
-            initial={{ scale: 1, opacity: 0.8 }}
-            animate={{ scale: 0, opacity: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          />
-        ))}
+        {trail.map((particle, i) => {
+          const shadowIdx = i % TRAIL_SHADOWS.length;
+          return (
+            <motion.div
+              key={particle.id}
+              className="absolute w-2 h-2 rounded-full"
+              style={{
+                left: particle.x - 4,
+                top: particle.y - 4,
+                background: `radial-gradient(circle, ${particle.color} 0%, transparent 70%)`,
+                boxShadow: TRAIL_SHADOWS[shadowIdx],
+              }}
+              initial={{ scale: 1, opacity: 0.8 }}
+              animate={{ scale: 0, opacity: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            />
+          );
+        })}
       </AnimatePresence>
     </div>
   );

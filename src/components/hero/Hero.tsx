@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { motion } from "framer-motion";
 import StarField from "./StarField";
 import CursorTrail from "./CursorTrail";
+import HeroDynamicElements from "./HeroDynamicElements";
 import { useMousePosition } from "@/hooks/useMousePosition";
 
 export default function Hero() {
@@ -49,6 +50,9 @@ export default function Hero() {
         }}
       />
 
+      {/* Dynamic Hero Elements (meteors, planets, satellites, astronaut) */}
+      {mounted && <HeroDynamicElements />}
+
       {/* Cursor Trail */}
       <CursorTrail />
 
@@ -62,16 +66,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
         >
-          <span
-            className="block"
-            style={{
-              color: "#00f0ff",
-              textShadow:
-                "0 0 10px rgba(0,240,255,0.5), 0 0 20px rgba(0,240,255,0.3), 0 0 40px rgba(0,240,255,0.15)",
-            }}
-          >
-            VEDANSH
-          </span>
+          <span className="block gradient-text-glow">VEDANSH</span>
           <span
             className="block"
             style={{
@@ -96,10 +91,13 @@ export default function Hero() {
         </motion.p>
 
         <motion.p
-          className="mt-2 text-sm sm:text-base tracking-[0.15em] text-neon-cyan/60"
-          style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+          className="mt-2 text-sm sm:text-base tracking-[0.15em] neon-text-purple"
+          style={{
+            fontFamily: "var(--font-jetbrains-mono)",
+            opacity: 0.7,
+          }}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={{ opacity: 0.7 }}
           transition={{ duration: 0.8, delay: 1.2 }}
         >
           Building Digital Universes
@@ -107,7 +105,7 @@ export default function Hero() {
 
         {/* Decorative line */}
         <motion.div
-          className="mt-8 h-[1px] bg-gradient-to-r from-transparent via-neon-cyan/50 to-transparent"
+          className="mt-8 h-[1px] bg-gradient-to-r from-transparent via-neon-pink/50 to-transparent"
           initial={{ width: 0 }}
           animate={{ width: "200px" }}
           transition={{ duration: 1.2, delay: 1.5 }}
@@ -121,25 +119,33 @@ export default function Hero() {
           transition={{ duration: 1, delay: 1.8 }}
         >
           {["Figma", "Framer", "Adobe XD", "Lottie", "Mixpanel"].map(
-            (tool, i) => (
-              <motion.span
-                key={tool}
-                className="px-3 py-1 text-[10px] sm:text-xs tracking-wider text-neon-cyan/40 border border-neon-cyan/10 rounded-full"
-                style={{ fontFamily: "var(--font-jetbrains-mono)" }}
-                animate={{
-                  y: [0, -5, 0],
-                  opacity: [0.4, 0.7, 0.4],
-                }}
-                transition={{
-                  duration: 3 + i * 0.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: i * 0.3,
-                }}
-              >
-                {tool}
-              </motion.span>
-            )
+            (tool, i) => {
+              const colors = ["#ff2d7b", "#b44aff", "#4d7cff", "#ff44cc", "#ff6b35"];
+              const color = colors[i % colors.length];
+              return (
+                <motion.span
+                  key={tool}
+                  className="px-3 py-1 text-[10px] sm:text-xs tracking-wider rounded-full"
+                  style={{
+                    fontFamily: "var(--font-jetbrains-mono)",
+                    color: `${color}90`,
+                    border: `1px solid ${color}25`,
+                  }}
+                  animate={{
+                    y: [0, -5, 0],
+                    opacity: [0.4, 0.7, 0.4],
+                  }}
+                  transition={{
+                    duration: 3 + i * 0.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: i * 0.3,
+                  }}
+                >
+                  {tool}
+                </motion.span>
+              );
+            }
           )}
         </motion.div>
       </div>
@@ -152,7 +158,7 @@ export default function Hero() {
         transition={{ duration: 1, delay: 2.5 }}
       >
         <motion.p
-          className="text-[10px] tracking-[0.3em] text-neon-cyan/40 uppercase"
+          className="text-[10px] tracking-[0.3em] text-neon-pink/40 uppercase"
           style={{ fontFamily: "var(--font-jetbrains-mono)" }}
           animate={{ opacity: [0.3, 0.8, 0.3] }}
           transition={{ duration: 3, repeat: Infinity }}
@@ -160,12 +166,12 @@ export default function Hero() {
           Begin the Voyage
         </motion.p>
         <motion.div
-          className="w-5 h-8 rounded-full border border-neon-cyan/30 flex justify-center pt-2"
+          className="w-5 h-8 rounded-full border border-neon-purple/30 flex justify-center pt-2"
           animate={{ opacity: [0.3, 0.7, 0.3] }}
           transition={{ duration: 3, repeat: Infinity }}
         >
           <motion.div
-            className="w-1 h-2 rounded-full bg-neon-cyan/60"
+            className="w-1 h-2 rounded-full bg-neon-pink/60"
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           />
