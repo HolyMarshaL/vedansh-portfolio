@@ -8,6 +8,7 @@ interface StarFieldProps {
   count?: number;
   mouseX?: number;
   mouseY?: number;
+  isMobile?: boolean;
 }
 
 function createStarTexture(): THREE.Texture {
@@ -37,6 +38,7 @@ export default function StarField({
   count = 3000,
   mouseX = 0,
   mouseY = 0,
+  isMobile = false,
 }: StarFieldProps) {
   const mesh = useRef<THREE.Points>(null);
 
@@ -93,18 +95,30 @@ export default function StarField({
   useFrame((state) => {
     if (!mesh.current) return;
 
-    // Slow constant rotation
-    mesh.current.rotation.y += 0.0002;
-    mesh.current.rotation.x += 0.0001;
-
-    // Mouse-based parallax
-    const targetX = mouseX * 0.3;
-    const targetY = mouseY * 0.3;
-    mesh.current.rotation.y += (targetX - mesh.current.rotation.y) * 0.01;
-    mesh.current.rotation.x += (targetY - mesh.current.rotation.x) * 0.01;
-
-    // Gentle pulsing brightness
     const time = state.clock.elapsedTime;
+
+    if (isMobile) {
+      // ── Mobile: beautiful auto-orbit + optional gyroscope response ──
+      // Slow sinusoidal drift — stars gently breathe and sway on their own
+      const autoX = Math.sin(time * 0.07) * 0.35;
+      const autoY = Math.sin(time * 0.05 + 1.2) * 0.22;
+
+      // Gyroscope (mouseX/mouseY hold device orientation values on mobile)
+      // Blend auto-rotation with gyroscope tilt for a magical feel
+      mesh.current.rotation.y = autoX + mouseX * 0.5;
+      mesh.current.rotation.x = autoY + mouseY * 0.3;
+    } else {
+      // ── Desktop: slow constant rotation + mouse parallax ──
+      mesh.current.rotation.y += 0.0002;
+      mesh.current.rotation.x += 0.0001;
+
+      const targetX = mouseX * 0.3;
+      const targetY = mouseY * 0.3;
+      mesh.current.rotation.y += (targetX - mesh.current.rotation.y) * 0.01;
+      mesh.current.rotation.x += (targetY - mesh.current.rotation.x) * 0.01;
+    }
+
+    // Gentle pulsing brightness (same on both)
     const material = mesh.current.material as THREE.PointsMaterial;
     material.opacity = 0.75 + Math.sin(time * 0.5) * 0.1;
   });
@@ -124,7 +138,7 @@ export default function StarField({
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.4}
+        size={isMobile ? 0.5 : 0.4}
         map={starTexture}
         vertexColors
         transparent

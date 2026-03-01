@@ -26,11 +26,20 @@ const TRAIL_SHADOWS = [
 
 export default function CursorTrail() {
   const [trail, setTrail] = useState<TrailParticle[]>([]);
+  const [isTouch, setIsTouch] = useState(true); // default true (safe for SSR)
   const idCounter = useRef(0);
   const lastPos = useRef({ x: 0, y: 0 });
   const colorIndex = useRef(0);
 
   useEffect(() => {
+    // Detect touch device — no cursor trail on mobile/tablet
+    const touch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    setIsTouch(touch);
+  }, []);
+
+  useEffect(() => {
+    if (isTouch) return; // Skip on touch devices
+
     const handleMouseMove = (e: MouseEvent) => {
       const dx = e.clientX - lastPos.current.x;
       const dy = e.clientY - lastPos.current.y;
@@ -52,10 +61,11 @@ export default function CursorTrail() {
 
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  }, [isTouch]);
 
   // Clean up old particles
   useEffect(() => {
+    if (isTouch) return;
     const cleanup = setInterval(() => {
       setTrail((prev) => {
         if (prev.length === 0) return prev;
@@ -63,7 +73,10 @@ export default function CursorTrail() {
       });
     }, 100);
     return () => clearInterval(cleanup);
-  }, []);
+  }, [isTouch]);
+
+  // Don't render anything on touch devices
+  if (isTouch) return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-50">

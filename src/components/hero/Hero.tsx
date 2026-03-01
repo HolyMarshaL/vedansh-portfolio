@@ -7,14 +7,28 @@ import StarField from "./StarField";
 import CursorTrail from "./CursorTrail";
 import HeroDynamicElements from "./HeroDynamicElements";
 import { useMousePosition } from "@/hooks/useMousePosition";
+import { useDeviceOrientation } from "@/hooks/useDeviceOrientation";
 
 export default function Hero() {
   const mouse = useMousePosition();
+  const deviceOrientation = useDeviceOrientation();
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
+
+  // On mobile: use gyroscope (or zeros for auto-rotate). On desktop: use mouse.
+  const parallaxX = isMobile ? deviceOrientation.normalizedX : mouse.normalizedX;
+  const parallaxY = isMobile ? deviceOrientation.normalizedY : mouse.normalizedY;
+
+  // Fewer stars on mobile for performance
+  const starCount = isMobile ? 1200 : 3000;
 
   return (
     <section
@@ -31,9 +45,10 @@ export default function Hero() {
           >
             <Suspense fallback={null}>
               <StarField
-                count={3000}
-                mouseX={mouse.normalizedX}
-                mouseY={mouse.normalizedY}
+                count={starCount}
+                mouseX={parallaxX}
+                mouseY={parallaxY}
+                isMobile={isMobile}
               />
               <ambientLight intensity={0.1} />
             </Suspense>
@@ -51,16 +66,34 @@ export default function Hero() {
       />
 
       {/* Dynamic Hero Elements (meteors, planets, satellites, astronaut) */}
-      {mounted && <HeroDynamicElements />}
+      {mounted && <HeroDynamicElements isMobile={isMobile} />}
 
-      {/* Cursor Trail */}
-      <CursorTrail />
+      {/* Cursor Trail — desktop only (no cursor on touch) */}
+      {!isMobile && <CursorTrail />}
+
+      {/* Gyroscope hint on mobile (shows briefly then fades) */}
+      {mounted && isMobile && deviceOrientation.isActive && (
+        <motion.div
+          className="absolute top-6 right-6 z-20 flex items-center gap-2 pointer-events-none"
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: [0, 0.7, 0.7, 0] }}
+          transition={{ duration: 4, delay: 2, times: [0, 0.2, 0.8, 1] }}
+        >
+          <span
+            className="text-[9px] tracking-widest text-neon-purple/60 uppercase"
+            style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+          >
+            Tilt to explore
+          </span>
+          <span className="text-neon-purple/40 text-xs">↗</span>
+        </motion.div>
+      )}
 
       {/* Main Content */}
       <div className="relative z-10 flex flex-col items-center text-center px-4">
         {/* Name */}
         <motion.h1
-          className="text-[10vw] sm:text-[8vw] md:text-[7vw] lg:text-[6vw] font-bold leading-[0.9] tracking-tight"
+          className="text-[13vw] sm:text-[8vw] md:text-[7vw] lg:text-[6vw] font-bold leading-[0.9] tracking-tight"
           style={{ fontFamily: "var(--font-space-grotesk)" }}
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -81,7 +114,7 @@ export default function Hero() {
 
         {/* Subtitle */}
         <motion.p
-          className="mt-6 text-base sm:text-lg md:text-xl tracking-[0.25em] text-star-white/70 uppercase"
+          className="mt-4 sm:mt-6 text-sm sm:text-lg md:text-xl tracking-[0.2em] sm:tracking-[0.25em] text-star-white/70 uppercase"
           style={{ fontFamily: "var(--font-jetbrains-mono)" }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -91,7 +124,7 @@ export default function Hero() {
         </motion.p>
 
         <motion.p
-          className="mt-2 text-sm sm:text-base tracking-[0.15em] neon-text-purple"
+          className="mt-2 text-xs sm:text-base tracking-[0.12em] sm:tracking-[0.15em] neon-text-purple"
           style={{
             fontFamily: "var(--font-jetbrains-mono)",
             opacity: 0.7,
@@ -105,15 +138,15 @@ export default function Hero() {
 
         {/* Decorative line */}
         <motion.div
-          className="mt-8 h-[1px] bg-gradient-to-r from-transparent via-neon-pink/50 to-transparent"
+          className="mt-6 sm:mt-8 h-[1px] bg-gradient-to-r from-transparent via-neon-pink/50 to-transparent"
           initial={{ width: 0 }}
           animate={{ width: "200px" }}
           transition={{ duration: 1.2, delay: 1.5 }}
         />
 
-        {/* Floating tool icons as text badges */}
+        {/* Floating tool icons */}
         <motion.div
-          className="mt-8 flex flex-wrap justify-center gap-3"
+          className="mt-6 sm:mt-8 flex flex-wrap justify-center gap-2 sm:gap-3 max-w-xs sm:max-w-none"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.8 }}
@@ -125,7 +158,7 @@ export default function Hero() {
               return (
                 <motion.span
                   key={tool}
-                  className="px-3 py-1 text-[10px] sm:text-xs tracking-wider rounded-full"
+                  className="px-2.5 py-1 text-[9px] sm:text-[10px] tracking-wider rounded-full"
                   style={{
                     fontFamily: "var(--font-jetbrains-mono)",
                     color: `${color}90`,
@@ -152,13 +185,13 @@ export default function Hero() {
 
       {/* Scroll indicator */}
       <motion.div
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        className="absolute bottom-8 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 2.5 }}
       >
         <motion.p
-          className="text-[10px] tracking-[0.3em] text-neon-pink/40 uppercase"
+          className="text-[9px] sm:text-[10px] tracking-[0.3em] text-neon-pink/40 uppercase"
           style={{ fontFamily: "var(--font-jetbrains-mono)" }}
           animate={{ opacity: [0.3, 0.8, 0.3] }}
           transition={{ duration: 3, repeat: Infinity }}

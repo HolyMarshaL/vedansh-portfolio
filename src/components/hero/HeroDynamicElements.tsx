@@ -239,7 +239,7 @@ function SputnikModel({ flip }: { flip: boolean }) {
 }
 
 // ====== MAIN COMPONENT ======
-export default function HeroDynamicElements() {
+export default function HeroDynamicElements({ isMobile = false }: { isMobile?: boolean }) {
   const [meteors, setMeteors] = useState<Meteor[]>([]);
   const [planets, setPlanets] = useState<Planet[]>([]);
   const [satellites, setSatellites] = useState<Satellite[]>([]);
@@ -341,29 +341,43 @@ export default function HeroDynamicElements() {
   useEffect(() => {
     // Spawn first meteor immediately, then stagger others
     spawnMeteor();
-    const t1 = setTimeout(spawnMeteor, 5000);
-    const t2 = setTimeout(spawnSatellite, 9000);
-    const t3 = setTimeout(spawnPlanet, 15000);
 
-    // Recurring — single meteor every 8-15s; sat/astro at 50% reduced rate
-    const meteorInterval = setInterval(spawnMeteor, 8000 + Math.random() * 7000);
-    const satInterval = setInterval(spawnSatellite, 22000 + Math.random() * 16000);
-    const planetInterval = setInterval(spawnPlanet, 20000 + Math.random() * 12000);
-    const astroInterval = setInterval(spawnAstronaut, 65000 + Math.random() * 25000);
+    if (isMobile) {
+      // ── Mobile: meteors + planets only (no satellites/astronauts — too cluttered)
+      const t1 = setTimeout(spawnMeteor, 6000);
+      const t2 = setTimeout(spawnPlanet, 12000);
+      const meteorInterval = setInterval(spawnMeteor, 12000 + Math.random() * 8000);
+      const planetInterval = setInterval(spawnPlanet, 30000 + Math.random() * 15000);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearInterval(meteorInterval);
+        clearInterval(planetInterval);
+      };
+    } else {
+      // ── Desktop: full experience
+      const t1 = setTimeout(spawnMeteor, 5000);
+      const t2 = setTimeout(spawnSatellite, 9000);
+      const t3 = setTimeout(spawnPlanet, 15000);
+      const meteorInterval = setInterval(spawnMeteor, 8000 + Math.random() * 7000);
+      const satInterval = setInterval(spawnSatellite, 22000 + Math.random() * 16000);
+      const planetInterval = setInterval(spawnPlanet, 20000 + Math.random() * 12000);
+      const astroInterval = setInterval(spawnAstronaut, 65000 + Math.random() * 25000);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+        clearInterval(meteorInterval);
+        clearInterval(satInterval);
+        clearInterval(planetInterval);
+        clearInterval(astroInterval);
+      };
+    }
+  }, [isMobile, spawnMeteor, spawnSatellite, spawnPlanet, spawnAstronaut]);
 
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearInterval(meteorInterval);
-      clearInterval(satInterval);
-      clearInterval(planetInterval);
-      clearInterval(astroInterval);
-    };
-  }, [spawnMeteor, spawnSatellite, spawnPlanet, spawnAstronaut]);
-
-  // Boost when cursor is idle (conservative)
+  // Boost when cursor is idle — desktop only
   useEffect(() => {
+    if (isMobile) return;
     const idleCheck = setInterval(() => {
       const idleTime = Date.now() - lastMouseMove.current;
       if (idleTime > 5000) {
@@ -374,7 +388,7 @@ export default function HeroDynamicElements() {
       }
     }, 6000);
     return () => clearInterval(idleCheck);
-  }, [spawnMeteor, spawnSatellite, spawnPlanet, spawnAstronaut]);
+  }, [isMobile, spawnMeteor, spawnSatellite, spawnPlanet, spawnAstronaut]);
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-[2]">
@@ -473,25 +487,27 @@ export default function HeroDynamicElements() {
         ))}
       </AnimatePresence>
 
-      {/* ===== SATELLITES — ISS, Hubble, or Sputnik ===== */}
-      <AnimatePresence>
-        {satellites.map((sat) => (
-          <motion.div
-            key={`sat-${sat.id}`}
-            className="absolute"
-            initial={{ left: `${sat.startX}%`, top: `${sat.startY}%`, opacity: 0 }}
-            animate={{ left: `${sat.endX}%`, top: `${sat.endY}%`, opacity: [0, 1, 1, 0] }}
-            transition={{ duration: sat.duration, ease: "linear" }}
-          >
-            {sat.model === "iss" && <ISSModel flip={sat.flip} />}
-            {sat.model === "hubble" && <HubbleModel flip={sat.flip} />}
-            {sat.model === "sputnik" && <SputnikModel flip={sat.flip} />}
-          </motion.div>
-        ))}
-      </AnimatePresence>
+      {/* ===== SATELLITES — ISS, Hubble, or Sputnik (desktop only) ===== */}
+      {!isMobile && (
+        <AnimatePresence>
+          {satellites.map((sat) => (
+            <motion.div
+              key={`sat-${sat.id}`}
+              className="absolute"
+              initial={{ left: `${sat.startX}%`, top: `${sat.startY}%`, opacity: 0 }}
+              animate={{ left: `${sat.endX}%`, top: `${sat.endY}%`, opacity: [0, 1, 1, 0] }}
+              transition={{ duration: sat.duration, ease: "linear" }}
+            >
+              {sat.model === "iss" && <ISSModel flip={sat.flip} />}
+              {sat.model === "hubble" && <HubbleModel flip={sat.flip} />}
+              {sat.model === "sputnik" && <SputnikModel flip={sat.flip} />}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      )}
 
-      {/* ===== ASTRONAUT — White, Orange, or Black suit ===== */}
-      <AnimatePresence>
+      {/* ===== ASTRONAUT — White, Orange, or Black suit (desktop only) ===== */}
+      {!isMobile && <AnimatePresence>
         {astronauts.map((astro) => {
           const theme = SUIT_THEMES[astro.suitColor];
           return (
@@ -611,7 +627,7 @@ export default function HeroDynamicElements() {
             </motion.div>
           );
         })}
-      </AnimatePresence>
+      </AnimatePresence>}
     </div>
   );
 }
