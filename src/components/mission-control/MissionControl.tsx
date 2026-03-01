@@ -52,17 +52,16 @@ export default function MissionControl() {
           transition={{ duration: 1, delay: 0.2 }}
         >
           {/* Holographic frame — portrait rectangle */}
-          <div className="relative">
-            <div
-              className="w-48 sm:w-56 rounded-xl overflow-hidden scan-lines relative"
-              style={{ height: "320px" }}
-            >
-              {/* Photo */}
+          <div className="relative inline-block">
+            {/* Photo */}
+            <div className="rounded-xl overflow-hidden relative" style={{ width: "224px", height: "320px" }}>
               <Image
                 src="/images/vedansh.png"
                 alt="Vedansh Chauhan"
-                fill
-                className="object-cover object-top"
+                width={224}
+                height={320}
+                className="object-cover object-top w-full h-full"
+                style={{ objectPosition: "center top" }}
                 priority
               />
 
@@ -70,11 +69,7 @@ export default function MissionControl() {
               <motion.div
                 className="absolute inset-0 bg-gradient-to-b from-neon-purple/5 to-transparent pointer-events-none"
                 animate={{ y: ["-100%", "100%"] }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                 style={{ height: "30%" }}
               />
 
@@ -86,8 +81,7 @@ export default function MissionControl() {
             <div
               className="absolute inset-0 rounded-xl pointer-events-none"
               style={{
-                boxShadow:
-                  "0 0 15px rgba(180,74,255,0.3), inset 0 0 15px rgba(255,45,123,0.1)",
+                boxShadow: "0 0 15px rgba(180,74,255,0.3), inset 0 0 15px rgba(255,45,123,0.1)",
               }}
             />
           </div>
