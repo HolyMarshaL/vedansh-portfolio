@@ -53,8 +53,12 @@ Cyan (#00f0ff) kept as secondary accent only.
   - **White** — classic NASA EVA suit
   - **Orange** — ACES launch suit style, tan helmet
   - **Black** — dark ops suit, near-black helmet
-  - Gold visor (always), waving arms, floating tether, helmet light, every ~65-90s (50% less than before)
-- **Idle boost**: Extra spawns when cursor idle > 5 seconds (conservative)
+  - Gold visor (always), waving arms, floating tether, helmet light
+  - Spawns at 3s after first meteor, then every 18-27s (mobile) / 65-90s (desktop)
+  - Chaotic tumbling rotation: random start angle (0-360°), spins 270-540° across flight path, random CW/CCW direction
+  - Opacity 67.5% (25% reduced from original 90%)
+  - Size: 80% on desktop, 60% on mobile (20% reduction from previous)
+- **Idle boost**: Extra spawns when cursor idle > 5 seconds (desktop only)
 
 ## Gamification (Planned)
 
@@ -112,13 +116,30 @@ Retro synth + modern beats + phonk + epic space (Hans Zimmer F1 x Resonance "Hom
 - [x] Start position changed from above-viewport (-5%) to within-viewport top (2-22%) for guaranteed visibility
 - [x] Speed: 1.4-2.2s (slightly slower for better visibility), distance: 800-1200px
 
+### ✅ Completed (Phase 3c — Mobile Responsiveness)
+- [x] `useDeviceOrientation.ts` hook — gyroscope parallax for mobile stars (falls back to sinusoidal auto-orbit if no gyro)
+- [x] StarField: mobile uses sinusoidal auto-orbit + gyro blend, 1200 stars (vs 3000 desktop), size 0.5 (vs 0.4)
+- [x] Hero: detects mobile, routes parallax to gyro/auto-orbit, hides CursorTrail on touch, "Tilt to explore" hint
+- [x] CursorTrail: returns null on touch devices (no cursor on mobile)
+- [x] ConstellationMap: mobile = 2-col tap-to-reveal card grid (`block md:hidden`), desktop = original SVG star map (`hidden md:block`)
+- [x] HeroDynamicElements: satellites scaled 70%, astronauts scaled 60% on mobile; idle boost desktop-only
+
+### ✅ Completed (Phase 3d — Astronaut Polish)
+- [x] Astronaut chaotic tumbling: random start angle (0-360°), spins 270-540° in random CW/CCW direction across full flight path
+- [x] Astronaut opacity reduced by 25% (0.9 → 0.675)
+- [x] Astronaut size reduced 20%: desktop 80%, mobile 60%
+- [x] First astronaut now spawns 3s after first meteor (both mobile and desktop)
+- [x] Mobile astronaut spawn rate matched to planets: every 18-27s (was 48-66s)
+- [x] Mobile spawn sequence: meteor@0s → astronaut@3s → meteor@3.6s → satellite@7.2s → planet@11s
+
 ### 🔲 TODO (Phase 4+)
 - [ ] Lenis smooth scroll integration
 - [ ] GSAP ScrollTrigger for section entrance animations
 - [ ] Sound design (Howler.js) — retro synth, section shifts, UI sounds
 - [ ] Gamification system (7 achievements, progress ring, easter eggs)
 - [ ] Real photos/assets replacing placeholders
-- [ ] Mobile responsive polish
+- [x] Mobile responsive polish (Phase 3c complete)
+- [ ] Mobile responsive polish — further passes if needed
 - [ ] Performance optimization (lazy loading, code splitting)
 - [ ] Custom domain setup on Vercel
 
@@ -147,7 +168,8 @@ src/
 │   ├── signal/Contact.tsx                 # Transmission terminal contact form
 │   └── footer/Footer.tsx                  # Stardate footer
 ├── hooks/
-│   └── useMousePosition.ts  # Mouse position hook with normalized coordinates
+│   ├── useMousePosition.ts       # Mouse position hook with normalized coordinates
+│   └── useDeviceOrientation.ts  # Gyroscope hook for mobile parallax (gamma/beta → -1..1)
 └── lib/
     └── content.ts           # All portfolio data, copy, metrics, social links
 ```
