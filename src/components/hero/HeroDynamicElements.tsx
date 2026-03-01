@@ -349,7 +349,7 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
       const t1 = setTimeout(spawnMeteor, 3600);
       const t2 = setTimeout(spawnSatellite, 7200);
       const t3 = setTimeout(spawnPlanet, 11000);
-      const t4 = setTimeout(spawnAstronaut, 14000);
+      const t4 = setTimeout(spawnAstronaut, 3000);
       const meteorInterval = setInterval(spawnMeteor, 7200 + Math.random() * 4800);
       const satInterval = setInterval(spawnSatellite, 18000 + Math.random() * 12000);
       const planetInterval = setInterval(spawnPlanet, 18000 + Math.random() * 9000);
@@ -369,6 +369,7 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
       const t1 = setTimeout(spawnMeteor, 5000);
       const t2 = setTimeout(spawnSatellite, 9000);
       const t3 = setTimeout(spawnPlanet, 15000);
+      const t4 = setTimeout(spawnAstronaut, 3000);
       const meteorInterval = setInterval(spawnMeteor, 8000 + Math.random() * 7000);
       const satInterval = setInterval(spawnSatellite, 22000 + Math.random() * 16000);
       const planetInterval = setInterval(spawnPlanet, 20000 + Math.random() * 12000);
@@ -377,6 +378,7 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
         clearTimeout(t1);
         clearTimeout(t2);
         clearTimeout(t3);
+        clearTimeout(t4);
         clearInterval(meteorInterval);
         clearInterval(satInterval);
         clearInterval(planetInterval);
