@@ -559,16 +559,13 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
                 scale: isMobile ? 0.7 : 1,
               }}
               transition={isHit ? {
-                duration: 17.5,
-                // Position: pure linear = constant velocity (Newton 1st law, no friction)
-                left:    { ease: "linear" },
-                top:     { ease: "linear" },
-                // Rotation: angular momentum conserved — constant spin
-                rotate:  { ease: "linear" },
-                // Scale: 1.5s pulse (flash up, snap back to normal), then stays full size
+                // Explicitly set duration on every per-property override —
+                // Framer Motion does NOT inherit parent duration into property objects
+                left:    { ease: "linear", duration: 17.5 },
+                top:     { ease: "linear", duration: 17.5 },
+                rotate:  { ease: "linear", duration: 17.5 },
                 scale:   { duration: 1.5, times: [0, 0.02, 1], ease: "easeOut" },
-                // Opacity: hold fully visible until 85%, then graceful fade
-                opacity: { times: [0, 0.85, 1], ease: "linear" },
+                opacity: { times: [0, 0.85, 1], ease: "linear", duration: 17.5 },
               } : {
                 duration: sat.duration,
                 ease: "linear",
@@ -618,17 +615,13 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
                 scale: isMobile ? 0.6 : 0.8,
               }}
               transition={isHit ? {
-                duration: 17.5,
-                // Position: pure linear = constant velocity. Astronaut tumbles across
-                // the full viewport, visibly drifting, before exiting to deep space.
-                left:    { ease: "linear" },
-                top:     { ease: "linear" },
-                // Rotation: angular momentum conserved — constant chaotic tumble
-                rotate:  { ease: "linear" },
-                // Scale: 1.5s pulse (flash up, snap back to normal), then stays full size
+                // Explicitly set duration on every per-property override —
+                // Framer Motion does NOT inherit parent duration into property objects
+                left:    { ease: "linear", duration: 17.5 },
+                top:     { ease: "linear", duration: 17.5 },
+                rotate:  { ease: "linear", duration: 17.5 },
                 scale:   { duration: 1.5, times: [0, 0.02, 1], ease: "easeOut" },
-                // Opacity: hold at 0.675 until 85% of journey, then fade into the void
-                opacity: { times: [0, 0.85, 1], ease: "linear" },
+                opacity: { times: [0, 0.85, 1], ease: "linear", duration: 17.5 },
               } : {
                 duration: astro.duration,
                 ease: "linear",
