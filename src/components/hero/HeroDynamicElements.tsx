@@ -547,9 +547,10 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
                 left: hitTarget!.left,
                 top:  hitTarget!.top,
                 rotate: hitTarget!.spin,
-                // Impact flash (brief 30% expansion) → perspective recession to near-zero
-                scale: [isMobile ? 0.7 : 1, isMobile ? 0.91 : 1.3, 0.05],
-                // Stays fully visible during blast-off, fades as it enters the void
+                // Flash up 30% → snap back to normal size in 1.5s, then stays full size
+                // throughout the drift so the element remains clearly visible
+                scale: [isMobile ? 0.7 : 1, isMobile ? 0.91 : 1.3, isMobile ? 0.7 : 1],
+                // Hold at full opacity for 85% of the journey, then fade into the void
                 opacity: [1, 1, 0],
               } : {
                 left: `${sat.endX}%`,
@@ -559,17 +560,15 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
               }}
               transition={isHit ? {
                 duration: 17.5,
-                // Position: pure linear = constant velocity (Newton 1st law, no friction).
-                // Object visibly glides across the full viewport before exiting.
+                // Position: pure linear = constant velocity (Newton 1st law, no friction)
                 left:    { ease: "linear" },
                 top:     { ease: "linear" },
-                // Rotation: angular momentum conserved — constant spin, no damping
+                // Rotation: angular momentum conserved — constant spin
                 rotate:  { ease: "linear" },
-                // Scale: 66ms impact flash, then easeOut recession over full journey
-                // (fast angular-size loss at first as distance grows, then levels off)
-                scale:   { times: [0, 0.02, 1], ease: ["easeOut", "easeOut"] },
-                // Opacity: hold fully visible until 75%, then graceful fade into the void
-                opacity: { times: [0, 0.75, 1], ease: "linear" },
+                // Scale: 1.5s pulse (flash up, snap back to normal), then stays full size
+                scale:   { duration: 1.5, times: [0, 0.02, 1], ease: "easeOut" },
+                // Opacity: hold fully visible until 85%, then graceful fade
+                opacity: { times: [0, 0.85, 1], ease: "linear" },
               } : {
                 duration: sat.duration,
                 ease: "linear",
@@ -606,9 +605,9 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
                 left: hitTarget!.left,
                 top:  hitTarget!.top,
                 rotate: astro.rotation + astro.totalSpin + hitTarget!.spin,
-                // Impact flash → perspective recession (astronauts tumble more chaotically so
-                // the flash is slightly more dramatic: 1.4x instead of 1.3x)
-                scale: [isMobile ? 0.6 : 0.8, isMobile ? 0.84 : 1.12, 0.04],
+                // Flash up 40% → snap back to normal size in 1.5s, then stays full size
+                // throughout the drift so the astronaut stays clearly visible
+                scale: [isMobile ? 0.6 : 0.8, isMobile ? 0.84 : 1.12, isMobile ? 0.6 : 0.8],
                 // Start from their natural opacity, hold it, then fade into the void
                 opacity: [0.675, 0.675, 0],
               } : {
@@ -626,10 +625,10 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
                 top:     { ease: "linear" },
                 // Rotation: angular momentum conserved — constant chaotic tumble
                 rotate:  { ease: "linear" },
-                // Scale: brief 70ms impact flash, then easeOut perspective recession
-                scale:   { times: [0, 0.02, 1], ease: ["easeOut", "easeOut"] },
-                // Opacity: hold at 0.675 until 75% of journey, then fade into the void
-                opacity: { times: [0, 0.75, 1], ease: "linear" },
+                // Scale: 1.5s pulse (flash up, snap back to normal), then stays full size
+                scale:   { duration: 1.5, times: [0, 0.02, 1], ease: "easeOut" },
+                // Opacity: hold at 0.675 until 85% of journey, then fade into the void
+                opacity: { times: [0, 0.85, 1], ease: "linear" },
               } : {
                 duration: astro.duration,
                 ease: "linear",
