@@ -245,6 +245,7 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
   const [planets, setPlanets] = useState<Planet[]>([]);
   const [satellites, setSatellites] = useState<Satellite[]>([]);
   const [astronauts, setAstronauts] = useState<Astronaut[]>([]);
+  const [hitIds, setHitIds] = useState<Set<number>>(new Set());
   const idRef = useRef(0);
   const lastMouseMove = useRef(Date.now());
 
@@ -337,6 +338,24 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
     setTimeout(() => {
       setAstronauts((prev) => prev.filter((a) => a.id !== astro.id));
     }, (astro.duration + 2) * 1000);
+  }, []);
+
+  // ====== HIT HANDLER — click/tap sends element shooting into deep space ======
+  const handleHit = useCallback((id: number) => {
+    setHitIds((prev) => {
+      if (prev.has(id)) return prev; // already hit, ignore
+      return new Set([...prev, id]);
+    });
+    // Remove element after the blast-off animation finishes
+    setTimeout(() => {
+      setSatellites((prev) => prev.filter((s) => s.id !== id));
+      setAstronauts((prev) => prev.filter((a) => a.id !== id));
+      setHitIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }, 900);
   }, []);
 
   // ====== SPAWNING LOOP ======
@@ -501,44 +520,79 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
 
       {/* ===== SATELLITES — ISS, Hubble, or Sputnik ===== */}
       <AnimatePresence>
-        {satellites.map((sat) => (
-          <motion.div
-            key={`sat-${sat.id}`}
-            className="absolute"
-            style={isMobile ? { transform: "scale(0.7)", transformOrigin: "top left" } : undefined}
-            initial={{ left: `${sat.startX}%`, top: `${sat.startY}%`, opacity: 0 }}
-            animate={{ left: `${sat.endX}%`, top: `${sat.endY}%`, opacity: [0, 1, 1, 0] }}
-            transition={{ duration: sat.duration, ease: "linear" }}
-          >
-            {sat.model === "iss" && <ISSModel flip={sat.flip} />}
-            {sat.model === "hubble" && <HubbleModel flip={sat.flip} />}
-            {sat.model === "sputnik" && <SputnikModel flip={sat.flip} />}
-          </motion.div>
-        ))}
+        {satellites.map((sat) => {
+          const isHit = hitIds.has(sat.id);
+          return (
+            <motion.div
+              key={`sat-${sat.id}`}
+              className="absolute cursor-pointer"
+              style={{ transformOrigin: "top left", pointerEvents: "auto" }}
+              initial={{ left: `${sat.startX}%`, top: `${sat.startY}%`, opacity: 0, scale: isMobile ? 0.7 : 1, rotate: 0 }}
+              animate={isHit ? {
+                top: "125%",
+                rotate: 720,
+                opacity: 0,
+                scale: 0.1,
+              } : {
+                left: `${sat.endX}%`,
+                top: `${sat.endY}%`,
+                opacity: [0, 1, 1, 0],
+                scale: isMobile ? 0.7 : 1,
+              }}
+              transition={isHit ? {
+                duration: 0.65,
+                ease: "easeIn",
+              } : {
+                duration: sat.duration,
+                ease: "linear",
+              }}
+              onTap={() => handleHit(sat.id)}
+            >
+              {sat.model === "iss" && <ISSModel flip={sat.flip} />}
+              {sat.model === "hubble" && <HubbleModel flip={sat.flip} />}
+              {sat.model === "sputnik" && <SputnikModel flip={sat.flip} />}
+            </motion.div>
+          );
+        })}
       </AnimatePresence>
 
       {/* ===== ASTRONAUT — White, Orange, or Black suit ===== */}
       <AnimatePresence>
         {astronauts.map((astro) => {
           const theme = SUIT_THEMES[astro.suitColor];
+          const isHit = hitIds.has(astro.id);
           return (
             <motion.div
               key={`astro-${astro.id}`}
-              className="absolute"
-              style={{ transform: isMobile ? "scale(0.6)" : "scale(0.8)", transformOrigin: "top left" }}
+              className="absolute cursor-pointer"
+              style={{ transformOrigin: "top left", pointerEvents: "auto" }}
               initial={{
                 left: `${astro.startX}%`,
                 top: `${astro.startY}%`,
                 opacity: 0,
                 rotate: astro.rotation,
+                scale: isMobile ? 0.6 : 0.8,
               }}
-              animate={{
+              animate={isHit ? {
+                top: "125%",
+                rotate: astro.rotation + astro.totalSpin + 1080,
+                opacity: 0,
+                scale: 0.05,
+              } : {
                 left: `${astro.endX}%`,
                 top: `${astro.endY}%`,
                 opacity: [0, 0.675, 0.675, 0],
                 rotate: astro.rotation + astro.totalSpin,
+                scale: isMobile ? 0.6 : 0.8,
               }}
-              transition={{ duration: astro.duration, ease: "linear" }}
+              transition={isHit ? {
+                duration: 0.65,
+                ease: "easeIn",
+              } : {
+                duration: astro.duration,
+                ease: "linear",
+              }}
+              onTap={() => handleHit(astro.id)}
             >
               <svg width="40" height="52" viewBox="0 0 40 52" fill="none">
                 <defs>
