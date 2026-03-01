@@ -51,6 +51,12 @@ interface Astronaut {
   suitColor: "white" | "orange" | "black";
 }
 
+interface HitTarget {
+  left: string;
+  top: string;
+  spin: number; // total rotation delta on hit
+}
+
 // ====== CONSTANTS ======
 const METEOR_COLORS = ["#ff2d7b", "#b44aff", "#4d7cff", "#ff44cc", "#ffffff"];
 const PLANET_PALETTES = [
@@ -245,7 +251,7 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
   const [planets, setPlanets] = useState<Planet[]>([]);
   const [satellites, setSatellites] = useState<Satellite[]>([]);
   const [astronauts, setAstronauts] = useState<Astronaut[]>([]);
-  const [hitIds, setHitIds] = useState<Set<number>>(new Set());
+  const [hitMap, setHitMap] = useState<Map<number, HitTarget>>(new Map());
   const idRef = useRef(0);
   const lastMouseMove = useRef(Date.now());
 
@@ -340,18 +346,26 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
     }, (astro.duration + 2) * 1000);
   }, []);
 
-  // ====== HIT HANDLER — click/tap sends element shooting into deep space ======
+  // ====== HIT HANDLER — click/tap sends element shooting in a random direction ======
   const handleHit = useCallback((id: number) => {
-    setHitIds((prev) => {
+    setHitMap((prev) => {
       if (prev.has(id)) return prev; // already hit, ignore
-      return new Set([...prev, id]);
+      // Random angle in full 360°, project 170 viewport-% to guarantee offscreen
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 170;
+      const target: HitTarget = {
+        left: `${50 + Math.cos(angle) * dist}%`,
+        top:  `${50 + Math.sin(angle) * dist}%`,
+        spin: (Math.random() > 0.5 ? 1 : -1) * (720 + Math.random() * 360),
+      };
+      return new Map([...prev, [id, target]]);
     });
-    // Remove element after the blast-off animation finishes
+    // Remove element after blast-off animation finishes
     setTimeout(() => {
       setSatellites((prev) => prev.filter((s) => s.id !== id));
       setAstronauts((prev) => prev.filter((a) => a.id !== id));
-      setHitIds((prev) => {
-        const next = new Set(prev);
+      setHitMap((prev) => {
+        const next = new Map(prev);
         next.delete(id);
         return next;
       });
@@ -521,7 +535,8 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
       {/* ===== SATELLITES — ISS, Hubble, or Sputnik ===== */}
       <AnimatePresence>
         {satellites.map((sat) => {
-          const isHit = hitIds.has(sat.id);
+          const hitTarget = hitMap.get(sat.id);
+          const isHit = !!hitTarget;
           return (
             <motion.div
               key={`sat-${sat.id}`}
@@ -529,8 +544,9 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
               style={{ transformOrigin: "top left", pointerEvents: "auto" }}
               initial={{ left: `${sat.startX}%`, top: `${sat.startY}%`, opacity: 0, scale: isMobile ? 0.7 : 1, rotate: 0 }}
               animate={isHit ? {
-                top: "125%",
-                rotate: 720,
+                left: hitTarget!.left,
+                top:  hitTarget!.top,
+                rotate: hitTarget!.spin,
                 opacity: 0,
                 scale: 0.1,
               } : {
@@ -560,7 +576,8 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
       <AnimatePresence>
         {astronauts.map((astro) => {
           const theme = SUIT_THEMES[astro.suitColor];
-          const isHit = hitIds.has(astro.id);
+          const hitTarget = hitMap.get(astro.id);
+          const isHit = !!hitTarget;
           return (
             <motion.div
               key={`astro-${astro.id}`}
@@ -574,8 +591,9 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
                 scale: isMobile ? 0.6 : 0.8,
               }}
               animate={isHit ? {
-                top: "125%",
-                rotate: astro.rotation + astro.totalSpin + 1080,
+                left: hitTarget!.left,
+                top:  hitTarget!.top,
+                rotate: astro.rotation + astro.totalSpin + hitTarget!.spin,
                 opacity: 0,
                 scale: 0.05,
               } : {
