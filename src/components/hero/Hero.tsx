@@ -9,7 +9,7 @@ import HeroDynamicElements from "./HeroDynamicElements";
 import { useMousePosition } from "@/hooks/useMousePosition";
 import { useDeviceOrientation } from "@/hooks/useDeviceOrientation";
 
-export default function Hero() {
+export default function Hero({ showDynamicElements = true }: { showDynamicElements?: boolean }) {
   const mouse = useMousePosition();
   const deviceOrientation = useDeviceOrientation();
   const [mounted, setMounted] = useState(false);
@@ -65,8 +65,8 @@ export default function Hero() {
         }}
       />
 
-      {/* Dynamic Hero Elements (meteors, planets, satellites, astronaut) */}
-      {mounted && <HeroDynamicElements isMobile={isMobile} />}
+      {/* Dynamic Hero Elements — gated until arrival animation completes */}
+      {mounted && showDynamicElements && <HeroDynamicElements isMobile={isMobile} />}
 
       {/* Cursor Trail — desktop only (no cursor on touch) */}
       {!isMobile && <CursorTrail />}

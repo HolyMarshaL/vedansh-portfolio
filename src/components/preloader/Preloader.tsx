@@ -144,8 +144,8 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     <AnimatePresence>
       <motion.div
         className="fixed inset-0 z-[100] flex items-center justify-center bg-space-black overflow-hidden"
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.5 }}
+        exit={{ opacity: 0, scale: 1.1 }}
+        transition={{ duration: 0.55 }}
       >
         {/* ── Layer 1: Parallax star particles — moves OPPOSITE to mouse (depth) ── */}
         <div
@@ -527,7 +527,8 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                 transition={{ duration: 0.95, delay: 0.18, ease: "easeOut" }}
               />
 
-              {/* Stage 3: Full-screen engulf */}
+              {/* Stage 3: Full-screen engulf — fades out by t=2.5s so screen is dark
+                  when onComplete fires at t=3s, giving ArrivalPortalRing a clean start */}
               <motion.div
                 className="absolute rounded-full"
                 style={{
@@ -541,9 +542,9 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: [0, 2, 500], opacity: [0, 1, 1, 0] }}
                 transition={{
-                  duration: 3.0,
+                  duration: 2.5,
                   delay: 0.5,
-                  times: [0, 0.04, 0.85, 1],
+                  times: [0, 0.04, 0.6, 0.82],
                   ease: "easeIn",
                 }}
               />

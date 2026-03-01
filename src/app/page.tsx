@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import Preloader from "@/components/preloader/Preloader";
 import SmoothScroll from "@/components/SmoothScroll";
+import ArrivalPortalRing from "@/components/ArrivalPortalRing";
 import Hero from "@/components/hero/Hero";
 import MissionControl from "@/components/mission-control/MissionControl";
 import ConstellationMap from "@/components/constellation/ConstellationMap";
@@ -20,12 +22,13 @@ const ProjectSolarSystem = dynamic(
 export default function Home() {
   const [launched, setLaunched] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [arrivalComplete, setArrivalComplete] = useState(false);
+  const arrivalFiredRef = useRef(false);
 
   useEffect(() => {
     if (launched) {
-      // Small delay after preloader completes to let the warp effect finish
-      const timer = setTimeout(() => setShowContent(true), 100);
-      return () => clearTimeout(timer);
+      // Show content immediately — ArrivalPortalRing handles the cinematic transition
+      setShowContent(true);
     }
   }, [launched]);
 
@@ -37,8 +40,21 @@ export default function Home() {
       {/* Main content — only rendered after launch, wrapped in Lenis smooth scroll */}
       {showContent && (
         <SmoothScroll>
+        {/* Arrival: clip-path circle expands from center + scale zoom-in = warp arrival feel */}
+        <motion.div
+          initial={{ clipPath: "circle(0% at 50% 50%)", scale: 0.88 }}
+          animate={{ clipPath: "circle(150% at 50% 50%)", scale: 1 }}
+          transition={{ duration: 0.92, ease: [0.2, 0, 0.15, 1] }}
+          onAnimationComplete={() => {
+            if (!arrivalFiredRef.current) {
+              arrivalFiredRef.current = true;
+              setArrivalComplete(true);
+            }
+          }}
+          style={{ transformOrigin: "50% 50%" }}
+        >
         <div>
-          <Hero />
+          <Hero showDynamicElements={arrivalComplete} />
 
           {/* Divider */}
           <div className="h-px bg-gradient-to-r from-transparent via-neon-cyan/10 to-transparent" />
@@ -67,6 +83,9 @@ export default function Home() {
 
           <Footer />
         </div>
+        </motion.div>
+        {/* Portal ring overlay — synced with clip-path expansion above */}
+        {!arrivalComplete && <ArrivalPortalRing />}
         </SmoothScroll>
       )}
     </main>

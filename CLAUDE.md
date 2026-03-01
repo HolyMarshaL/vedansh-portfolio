@@ -155,6 +155,14 @@ Retro synth + modern beats + phonk + epic space (Hans Zimmer F1 x Resonance "Hom
 - [x] Added **meteors** to preloader (same pattern as HeroDynamicElements — gradient tail + glowing head, spawns on mount then every 4-7s)
 - [x] Warp animation **10x crazier**: 250 streaks (vs 60) in 3 tiers (thin/bold/mega-beam), 10 expanding tunnel rings, 3-stage central burst (spark → halo → full-screen engulf), 4 rapid-fire color flash overlays, nebula background color shift, warp duration extended to 3s
 
+### ✅ Completed (Phase 3h — Cinematic Wormhole→Hero Arrival Transition)
+- [x] `src/components/ArrivalPortalRing.tsx` (NEW) — fixed z-[88] overlay: 3 concentric rings (neon glow + bright white flash + central energy burst) expand from 0 → 165vw in sync with clip-path, then fade out
+- [x] `page.tsx`: content wrapper uses `clipPath: circle(0%)→circle(150%)` + `scale: 0.88→1` (0.92s) — portal hole "punches open" the hero from center
+- [x] `arrivalComplete` state + `arrivalFiredRef` ref gates dynamic hero elements until the 0.92s arrival animation completes
+- [x] `Hero.tsx`: `showDynamicElements?: boolean` prop — meteors/satellites/astronauts only spawn after arrival, preventing jarring overlap
+- [x] `Preloader.tsx` Stage 3 fix: warp fades out by t=2.5s (times [0, 0.04, 0.6, 0.82]); `exit={{ opacity: 0, scale: 1.1 }}` = "breaking through" feel
+- [x] Full cinematic sequence: warp fades → dark → portal ring expands from center (neon glow) → hero zooms in from center → dynamic elements spawn after arrival
+
 ### ✅ Completed (Phase 4a — Lenis Smooth Scroll)
 - [x] `src/components/SmoothScroll.tsx` — client component wrapping children with Lenis v1.3
 - [x] Exponential easing: `Math.min(1, 1.001 - Math.pow(2, -10 * t))` for fast-start, smooth-decel feel
@@ -183,6 +191,7 @@ src/
 │   └── page.tsx             # Main orchestrator (preloader → sections)
 ├── components/
 │   ├── preloader/Preloader.tsx     # 4-phase animated preloader
+│   ├── ArrivalPortalRing.tsx       # Cinematic portal ring overlay (wormhole→hero transition)
 │   ├── hero/
 │   │   ├── Hero.tsx                # Main hero with Canvas, dynamic elements
 │   │   ├── StarField.tsx           # Three.js 3000-star system with canvas texture
