@@ -360,7 +360,7 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
       };
       return new Map([...prev, [id, target]]);
     });
-    // Remove element after blast-off animation finishes
+    // Remove element after blast-off animation finishes (1.1s anim + buffer)
     setTimeout(() => {
       setSatellites((prev) => prev.filter((s) => s.id !== id));
       setAstronauts((prev) => prev.filter((a) => a.id !== id));
@@ -369,7 +369,7 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
         next.delete(id);
         return next;
       });
-    }, 900);
+    }, 1400);
   }, []);
 
   // ====== SPAWNING LOOP ======
@@ -547,8 +547,10 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
                 left: hitTarget!.left,
                 top:  hitTarget!.top,
                 rotate: hitTarget!.spin,
-                opacity: 0,
-                scale: 0.1,
+                // Impact flash (brief 30% expansion) → perspective recession to near-zero
+                scale: [isMobile ? 0.7 : 1, isMobile ? 0.91 : 1.3, 0.05],
+                // Stays fully visible during blast-off, fades as it enters the void
+                opacity: [1, 1, 0],
               } : {
                 left: `${sat.endX}%`,
                 top: `${sat.endY}%`,
@@ -556,8 +558,17 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
                 scale: isMobile ? 0.7 : 1,
               }}
               transition={isHit ? {
-                duration: 0.65,
-                ease: "easeIn",
+                duration: 1.1,
+                // Position: steep initial slope = instant full velocity from impact impulse,
+                // then near-linear cruise (Newton 1st law — no friction in space)
+                left:    { ease: [0, 0.9, 0.2, 1] },
+                top:     { ease: [0, 0.9, 0.2, 1] },
+                // Rotation: angular momentum conserved — perfectly constant spin rate
+                rotate:  { ease: "linear" },
+                // Scale: impact flash at 6% → easeOut recession (fast shrink at first, slows with distance)
+                scale:   { times: [0, 0.06, 1], ease: ["easeOut", "easeOut"] },
+                // Opacity: hold full until 65% of journey, then fade into the void
+                opacity: { times: [0, 0.65, 1], ease: "linear" },
               } : {
                 duration: sat.duration,
                 ease: "linear",
@@ -594,8 +605,11 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
                 left: hitTarget!.left,
                 top:  hitTarget!.top,
                 rotate: astro.rotation + astro.totalSpin + hitTarget!.spin,
-                opacity: 0,
-                scale: 0.05,
+                // Impact flash → perspective recession (astronauts tumble more chaotically so
+                // the flash is slightly more dramatic: 1.4x instead of 1.3x)
+                scale: [isMobile ? 0.6 : 0.8, isMobile ? 0.84 : 1.12, 0.04],
+                // Start from their natural opacity, hold it, then fade into the void
+                opacity: [0.675, 0.675, 0],
               } : {
                 left: `${astro.endX}%`,
                 top: `${astro.endY}%`,
@@ -604,8 +618,16 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
                 scale: isMobile ? 0.6 : 0.8,
               }}
               transition={isHit ? {
-                duration: 0.65,
-                ease: "easeIn",
+                duration: 1.1,
+                // Instant velocity from hit impulse → linear cruise (no space friction)
+                left:    { ease: [0, 0.9, 0.2, 1] },
+                top:     { ease: [0, 0.9, 0.2, 1] },
+                // Rotation: conserved angular momentum — constant tumble rate
+                rotate:  { ease: "linear" },
+                // Scale: impact flash at 6%, then easeOut recession (quick initial shrink)
+                scale:   { times: [0, 0.06, 1], ease: ["easeOut", "easeOut"] },
+                // Opacity: hold at 0.675 until 65%, then fade to black of deep space
+                opacity: { times: [0, 0.65, 1], ease: "linear" },
               } : {
                 duration: astro.duration,
                 ease: "linear",
