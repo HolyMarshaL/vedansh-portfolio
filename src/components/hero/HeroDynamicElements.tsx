@@ -360,7 +360,7 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
       };
       return new Map([...prev, [id, target]]);
     });
-    // Remove element after blast-off animation finishes (3.5s anim + buffer)
+    // Remove element after blast-off animation finishes (17.5s anim + buffer)
     setTimeout(() => {
       setSatellites((prev) => prev.filter((s) => s.id !== id));
       setAstronauts((prev) => prev.filter((a) => a.id !== id));
@@ -369,7 +369,7 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
         next.delete(id);
         return next;
       });
-    }, 4200);
+    }, 18500);
   }, []);
 
   // ====== SPAWNING LOOP ======
@@ -558,7 +558,7 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
                 scale: isMobile ? 0.7 : 1,
               }}
               transition={isHit ? {
-                duration: 3.5,
+                duration: 17.5,
                 // Position: pure linear = constant velocity (Newton 1st law, no friction).
                 // Object visibly glides across the full viewport before exiting.
                 left:    { ease: "linear" },
@@ -619,7 +619,7 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
                 scale: isMobile ? 0.6 : 0.8,
               }}
               transition={isHit ? {
-                duration: 3.5,
+                duration: 17.5,
                 // Position: pure linear = constant velocity. Astronaut tumbles across
                 // the full viewport, visibly drifting, before exiting to deep space.
                 left:    { ease: "linear" },
