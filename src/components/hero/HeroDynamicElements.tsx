@@ -369,7 +369,7 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
         next.delete(id);
         return next;
       });
-    }, 18500);
+    }, 14200);
   }, []);
 
   // ====== SPAWNING LOOP ======
@@ -561,11 +561,11 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
               transition={isHit ? {
                 // Explicitly set duration on every per-property override —
                 // Framer Motion does NOT inherit parent duration into property objects
-                left:    { ease: "linear", duration: 17.5 },
-                top:     { ease: "linear", duration: 17.5 },
-                rotate:  { ease: "linear", duration: 17.5 },
+                left:    { ease: "linear", duration: 13.1 },
+                top:     { ease: "linear", duration: 13.1 },
+                rotate:  { ease: "linear", duration: 13.1 },
                 scale:   { duration: 1.5, times: [0, 0.02, 1], ease: "easeOut" },
-                opacity: { times: [0, 0.85, 1], ease: "linear", duration: 17.5 },
+                opacity: { times: [0, 0.85, 1], ease: "linear", duration: 13.1 },
               } : {
                 duration: sat.duration,
                 ease: "linear",
@@ -617,11 +617,11 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
               transition={isHit ? {
                 // Explicitly set duration on every per-property override —
                 // Framer Motion does NOT inherit parent duration into property objects
-                left:    { ease: "linear", duration: 17.5 },
-                top:     { ease: "linear", duration: 17.5 },
-                rotate:  { ease: "linear", duration: 17.5 },
+                left:    { ease: "linear", duration: 13.1 },
+                top:     { ease: "linear", duration: 13.1 },
+                rotate:  { ease: "linear", duration: 13.1 },
                 scale:   { duration: 1.5, times: [0, 0.02, 1], ease: "easeOut" },
-                opacity: { times: [0, 0.85, 1], ease: "linear", duration: 17.5 },
+                opacity: { times: [0, 0.85, 1], ease: "linear", duration: 13.1 },
               } : {
                 duration: astro.duration,
                 ease: "linear",
