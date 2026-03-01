@@ -42,11 +42,19 @@ Cyan (#00f0ff) kept as secondary accent only.
 
 ## Dynamic Hero Elements
 
-- **Meteor showers**: Streaks with glowing head + fading tail, every 4-8s (more when cursor idle)
-- **Passing planets**: Large glowing spheres with rings, subtle opacity, every 15-25s
-- **Satellites**: Detailed SVG with solar panels + blinking signal light, every 10-18s
-- **Astronaut**: Full SVG figure with helmet, visor, limbs, tether, every 25-40s (rare)
-- **Idle boost**: Extra spawns when cursor idle > 3 seconds
+- **Meteors**: Single streak per spawn (not showers), clean linear path upper-right → lower-left, gradient tail + bright glowing head, every 8-15s. Angle 200-240°, calculated via `cos/sin` translate vector.
+- **Passing planets**: Large glowing spheres with rings, subtle opacity (~25%), every 20-32s
+- **Satellites** (3 models, random):
+  - **ISS** — dual solar panel arrays, cylindrical body, port window, dish antenna, blinking pink beacon
+  - **Hubble** — long telescope tube, open aperture doors + lens ring, top+bottom solar wings, high-gain antenna
+  - **Sputnik** — metallic sphere with radial gradient, 4 radiating antennae, orange radio beacon
+  - Spawn every ~22-38s (50% less than before)
+- **Astronaut** (3 suit colors, random):
+  - **White** — classic NASA EVA suit
+  - **Orange** — ACES launch suit style, tan helmet
+  - **Black** — dark ops suit, near-black helmet
+  - Gold visor (always), waving arms, floating tether, helmet light, every ~65-90s (50% less than before)
+- **Idle boost**: Extra spawns when cursor idle > 5 seconds (conservative)
 
 ## Gamification (Planned)
 
@@ -88,17 +96,24 @@ Retro synth + modern beats + phonk + epic space (Hans Zimmer F1 x Resonance "Hom
 - [x] Multi-color cursor trail
 - [x] Per-item accent colors (stats, constellations, timeline entries, social links)
 
-### 🔲 TODO
-- [ ] Fix meteor animation (linear path + trail)
-- [ ] Upgrade astronaut/satellite to high-quality opaque SVG models
+### ✅ Completed (Phase 3 — Refinements)
+- [x] Fixed meteors: single clean linear streak with gradient tail + glowing head (cos/sin vector translate)
+- [x] 3 distinct satellite models: ISS (solar arrays), Hubble (telescope), Sputnik (sphere + antennae)
+- [x] 3 astronaut suit colors: white (NASA), orange (ACES), black (dark ops)
+- [x] Halved satellite and astronaut spawn rates (less cluttered sky)
+- [x] Fixed TypeScript build error (`bufferAttribute` missing `args` prop for Vercel strict compile)
+- [x] Deployed to GitHub: https://github.com/HolyMarshaL/vedansh-portfolio
+- [x] Deployed to Vercel: https://vedansh-portfolio-opal.vercel.app (auto-deploys on push to master)
+
+### 🔲 TODO (Phase 4+)
 - [ ] Lenis smooth scroll integration
 - [ ] GSAP ScrollTrigger for section entrance animations
-- [ ] Sound design (Howler.js)
-- [ ] Gamification system (achievements, progress ring, easter eggs)
+- [ ] Sound design (Howler.js) — retro synth, section shifts, UI sounds
+- [ ] Gamification system (7 achievements, progress ring, easter eggs)
 - [ ] Real photos/assets replacing placeholders
 - [ ] Mobile responsive polish
 - [ ] Performance optimization (lazy loading, code splitting)
-- [ ] Deployment (GitHub + Vercel)
+- [ ] Custom domain setup on Vercel
 
 ## File Structure
 
