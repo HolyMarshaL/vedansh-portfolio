@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import Preloader from "@/components/preloader/Preloader";
@@ -20,72 +20,86 @@ const ProjectSolarSystem = dynamic(
 );
 
 export default function Home() {
-  const [launched, setLaunched] = useState(false);
-  const [showContent, setShowContent] = useState(false);
+  // contentMounted: true as soon as YES is clicked — mounts heavy content in the
+  // background (hidden behind preloader) so Three.js / WebGL can warm up fully
+  // while the countdown + zoom animation plays (~8s of free loading time).
+  const [contentMounted, setContentMounted] = useState(false);
+
+  // revealed: true when onComplete fires — triggers the clip-path reveal animation.
+  // By this point the content is already mounted and GPU-warm, so the transition
+  // is smooth with no jank from mounting heavy components mid-animation.
+  const [revealed, setRevealed] = useState(false);
+
   const [arrivalComplete, setArrivalComplete] = useState(false);
   const arrivalFiredRef = useRef(false);
 
-  useEffect(() => {
-    if (launched) {
-      // Show content immediately — ArrivalPortalRing handles the cinematic transition
-      setShowContent(true);
-    }
-  }, [launched]);
-
   return (
     <main className="bg-space-black min-h-screen">
-      {/* Preloader */}
-      {!launched && <Preloader onComplete={() => setLaunched(true)} />}
+      {/* Preloader — hidden once revealed */}
+      {!revealed && (
+        <Preloader
+          onStart={() => setContentMounted(true)}
+          onComplete={() => setRevealed(true)}
+        />
+      )}
 
-      {/* Main content — only rendered after launch, wrapped in Lenis smooth scroll */}
-      {showContent && (
+      {/* Main content — mounted on YES click (invisible), revealed on onComplete */}
+      {contentMounted && (
         <SmoothScroll>
-        {/* Arrival: clip-path circle expands from center + scale zoom-in = warp arrival feel */}
-        <motion.div
-          initial={{ clipPath: "circle(0% at 50% 50%)", scale: 0.88 }}
-          animate={{ clipPath: "circle(150% at 50% 50%)", scale: 1 }}
-          transition={{ duration: 0.92, ease: [0.2, 0, 0.15, 1] }}
-          onAnimationComplete={() => {
-            if (!arrivalFiredRef.current) {
-              arrivalFiredRef.current = true;
-              setArrivalComplete(true);
+          {/* Clip-path stays circle(0%) until revealed — content is mounted but
+              invisible, giving Three.js time to initialise while preloader runs */}
+          <motion.div
+            initial={{ clipPath: "circle(0% at 50% 50%)", scale: 0.88 }}
+            animate={
+              revealed
+                ? { clipPath: "circle(150% at 50% 50%)", scale: 1 }
+                : { clipPath: "circle(0% at 50% 50%)", scale: 0.88 }
             }
-          }}
-          style={{ transformOrigin: "50% 50%" }}
-        >
-        <div>
-          <Hero showDynamicElements={arrivalComplete} />
+            transition={{ duration: 0.92, ease: [0.2, 0, 0.15, 1] }}
+            onAnimationComplete={() => {
+              if (revealed && !arrivalFiredRef.current) {
+                arrivalFiredRef.current = true;
+                setArrivalComplete(true);
+              }
+            }}
+            style={{
+              transformOrigin: "50% 50%",
+              pointerEvents: revealed ? "auto" : "none",
+            }}
+          >
+            <div>
+              <Hero showDynamicElements={arrivalComplete} />
 
-          {/* Divider */}
-          <div className="h-px bg-gradient-to-r from-transparent via-neon-cyan/10 to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-neon-cyan/10 to-transparent" />
 
-          <MissionControl />
+              <MissionControl />
 
-          <div className="h-px bg-gradient-to-r from-transparent via-neon-cyan/10 to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-neon-cyan/10 to-transparent" />
 
-          <ConstellationMap />
+              <ConstellationMap />
 
-          <div className="h-px bg-gradient-to-r from-transparent via-neon-purple/10 to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-neon-purple/10 to-transparent" />
 
-          <ExperienceTimeline />
+              <ExperienceTimeline />
 
-          <div className="h-px bg-gradient-to-r from-transparent via-neon-orange/10 to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-neon-orange/10 to-transparent" />
 
-          <ProjectSolarSystem />
+              <ProjectSolarSystem />
 
-          <div className="h-px bg-gradient-to-r from-transparent via-neon-pink/10 to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-neon-pink/10 to-transparent" />
 
-          <DesignPhilosophy />
+              <DesignPhilosophy />
 
-          <div className="h-px bg-gradient-to-r from-transparent via-neon-cyan/10 to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-neon-cyan/10 to-transparent" />
 
-          <Contact />
+              <Contact />
 
-          <Footer />
-        </div>
-        </motion.div>
-        {/* Portal ring overlay — synced with clip-path expansion above */}
-        {!arrivalComplete && <ArrivalPortalRing />}
+              <Footer />
+            </div>
+          </motion.div>
+
+          {/* Portal ring — only during the 0.92s clip-path reveal */}
+          {revealed && !arrivalComplete && <ArrivalPortalRing />}
         </SmoothScroll>
       )}
     </main>

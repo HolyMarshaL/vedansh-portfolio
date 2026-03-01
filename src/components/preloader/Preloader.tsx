@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 type Phase = "question" | "response" | "countdown" | "warp" | "done";
 
 interface PreloaderProps {
+  onStart: () => void;
   onComplete: () => void;
 }
 
@@ -28,15 +29,15 @@ const TERMINAL_LINES = [
 ];
 
 const METEOR_COLORS = ["#ff2d7b", "#b44aff", "#4d7cff", "#ff44cc", "#ffffff"];
+const WARP_COLORS   = ["#ff2d7b", "#b44aff", "#4d7cff", "#ff44cc", "#ff6b35", "#ffffff"];
 const PARTICLE_COLORS = [
   "rgba(255,45,123,0.4)",
   "rgba(180,74,255,0.4)",
   "rgba(77,124,255,0.4)",
   "rgba(255,68,204,0.35)",
 ];
-const WARP_COLORS = ["#ff2d7b", "#b44aff", "#4d7cff", "#ff44cc", "#ff6b35", "#ffffff"];
 
-export default function Preloader({ onComplete }: PreloaderProps) {
+export default function Preloader({ onStart, onComplete }: PreloaderProps) {
   const [phase, setPhase] = useState<Phase>("question");
   const [countdown, setCountdown] = useState(5);
   const [terminalLines, setTerminalLines] = useState<string[]>([]);
@@ -45,6 +46,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   >([]);
   const [meteors, setMeteors] = useState<PreloaderMeteor[]>([]);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [warpStage, setWarpStage] = useState<"zoom" | "wormhole">("zoom");
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const meteorIdRef = useRef(0);
 
@@ -128,15 +130,24 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     };
   }, [phase]);
 
-  // Warp → done (3s for the full epic animation to play)
+  // Warp: two-stage sequence
+  // 750ms  — LAUNCH fills screen → switch to wormhole + mount content in background
+  // 3000ms — wormhole ends → reveal page
   useEffect(() => {
     if (phase !== "warp") return;
-    const timeout = setTimeout(() => {
+    const zoomTimer = setTimeout(() => {
+      setWarpStage("wormhole");
+      onStart(); // content mounts silently while wormhole plays
+    }, 750);
+    const doneTimer = setTimeout(() => {
       setPhase("done");
       onComplete();
     }, 3000);
-    return () => clearTimeout(timeout);
-  }, [phase, onComplete]);
+    return () => {
+      clearTimeout(zoomTimer);
+      clearTimeout(doneTimer);
+    };
+  }, [phase, onComplete, onStart]);
 
   if (phase === "done") return null;
 
@@ -405,114 +416,107 @@ export default function Preloader({ onComplete }: PreloaderProps) {
             </motion.div>
           )}
 
-          {/* ── PHASE 4: WARP ── */}
+          {/* ── PHASE 4: LAUNCH ZOOM → WORMHOLE ── */}
           {phase === "warp" && (
             <motion.div
               key="warp"
               className="fixed inset-0 flex items-center justify-center overflow-hidden"
-              initial={{ opacity: 0 }}
+              initial={{ opacity: 1 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.08 }}
             >
-              {/* Nebula background — simple 2-keyframe shift */}
-              <motion.div
-                className="absolute inset-0"
-                animate={{
-                  background: [
-                    "radial-gradient(ellipse at center, #b44aff15 0%, transparent 60%)",
-                    "radial-gradient(ellipse at center, #ffffff35 0%, #ff2d7b18 40%, transparent 70%)",
-                  ],
-                }}
-                transition={{ duration: 2.5, ease: "easeIn" }}
-              />
 
-              {/* ── 50 warp streaks — 1px thin, no filter ── */}
-              {Array.from({ length: 50 }).map((_, i) => {
-                const angle = (i / 50) * 360;
-                const color = WARP_COLORS[i % WARP_COLORS.length];
-                const delay = (i / 50) * 0.35;
-                return (
-                  <motion.div
-                    key={i}
-                    className="absolute"
+              {/* ── STAGE A: LAUNCH text zooms to fill screen (0 → 750ms) ── */}
+              {warpStage === "zoom" && (
+                <motion.div
+                  key="launch-zoom"
+                  className="relative select-none pointer-events-none"
+                  style={{ transformOrigin: "center center", willChange: "transform" }}
+                  initial={{ scale: 1, opacity: 0 }}
+                  animate={{ scale: [1, 1, 4.5], opacity: [0, 1, 1] }}
+                  transition={{
+                    duration: 0.75,
+                    times: [0, 0.08, 1],
+                    ease: [0.5, 0, 0.85, 1],
+                  }}
+                >
+                  {/* Large base font so 4.5× scale is crisp — rasterised at ~230px */}
+                  <span
+                    className="neon-text-pink font-bold whitespace-nowrap"
                     style={{
-                      height: "1px",
-                      width: "2px",
-                      left: "50%",
-                      top: "50%",
-                      transformOrigin: "left center",
-                      rotate: `${angle}deg`,
-                      background: `linear-gradient(90deg, transparent 0%, ${color}40 30%, ${color} 100%)`,
+                      fontFamily: "var(--font-space-grotesk)",
+                      fontSize: "clamp(80px, 18vw, 200px)",
+                      lineHeight: 1,
+                      display: "block",
                     }}
-                    initial={{ width: "2px", opacity: 0 }}
+                  >
+                    LAUNCH
+                  </span>
+                </motion.div>
+              )}
+
+              {/* ── STAGE B: Wormhole (750ms → 3000ms) — content loads in background ── */}
+              {warpStage === "wormhole" && (
+                <>
+                  {/* Nebula glow */}
+                  <motion.div
+                    className="absolute inset-0"
                     animate={{
-                      width: ["2px", `${65 + (i % 20)}vw`],
-                      opacity: [0, 0.7, 0],
+                      background: [
+                        "radial-gradient(ellipse at center, #b44aff15 0%, transparent 60%)",
+                        "radial-gradient(ellipse at center, #ffffff35 0%, #ff2d7b18 40%, transparent 70%)",
+                      ],
                     }}
-                    transition={{
-                      duration: 2.2,
-                      delay,
-                      ease: [0.1, 0.75, 0.9, 1],
-                      times: [0, 0.2, 1],
-                    }}
+                    transition={{ duration: 2.2, ease: "easeIn" }}
                   />
-                );
-              })}
 
-              {/* ── 5 expanding tunnel rings ── */}
-              {Array.from({ length: 5 }).map((_, i) => {
-                const ringColor = WARP_COLORS[i % WARP_COLORS.length];
-                return (
+                  {/* 50 warp streaks */}
+                  {Array.from({ length: 50 }).map((_, i) => {
+                    const angle = (i / 50) * 360;
+                    const color = WARP_COLORS[i % WARP_COLORS.length];
+                    const delay = (i / 50) * 0.35;
+                    return (
+                      <motion.div
+                        key={i}
+                        className="absolute"
+                        style={{
+                          height: "1px",
+                          width: "2px",
+                          left: "50%",
+                          top: "50%",
+                          transformOrigin: "left center",
+                          rotate: `${angle}deg`,
+                          background: `linear-gradient(90deg, transparent 0%, ${color}40 30%, ${color} 100%)`,
+                        }}
+                        initial={{ width: "2px", opacity: 0 }}
+                        animate={{ width: ["2px", `${65 + (i % 20)}vw`], opacity: [0, 0.7, 0] }}
+                        transition={{ duration: 2.2, delay, ease: [0.1, 0.75, 0.9, 1], times: [0, 0.2, 1] }}
+                      />
+                    );
+                  })}
+
+                  {/* 5 tunnel rings */}
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <motion.div
+                      key={`ring-${i}`}
+                      className="absolute rounded-full"
+                      style={{ width: "10px", height: "10px", border: `1px solid ${WARP_COLORS[i % WARP_COLORS.length]}70` }}
+                      initial={{ scale: 0, opacity: 0.8 }}
+                      animate={{ scale: [0, 60 + i * 10], opacity: [0.8, 0] }}
+                      transition={{ duration: 2.2, delay: i * 0.18, ease: "easeOut" }}
+                    />
+                  ))}
+
+                  {/* Central white spark */}
                   <motion.div
-                    key={`ring-${i}`}
                     className="absolute rounded-full"
-                    style={{
-                      width: "10px",
-                      height: "10px",
-                      border: `1px solid ${ringColor}70`,
-                    }}
-                    initial={{ scale: 0, opacity: 0.8 }}
-                    animate={{ scale: [0, 60 + i * 10], opacity: [0.8, 0] }}
-                    transition={{ duration: 2.4, delay: i * 0.18, ease: "easeOut" }}
+                    style={{ width: "8px", height: "8px", background: "white", boxShadow: "0 0 16px 8px rgba(255,255,255,0.9)" }}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: [0, 2, 0.8], opacity: [0, 1, 0] }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
                   />
-                );
-              })}
+                </>
+              )}
 
-              {/* ── Central burst — 2 stages ── */}
-
-              {/* Stage 1: White spark */}
-              <motion.div
-                className="absolute rounded-full"
-                style={{
-                  width: "8px",
-                  height: "8px",
-                  background: "white",
-                  boxShadow: "0 0 16px 8px rgba(255,255,255,0.9)",
-                }}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: [0, 2, 0.8], opacity: [0, 1, 0] }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-              />
-
-              {/* Stage 2: Full-screen engulf — fades out by t=2.5s so screen is dark
-                  when onComplete fires at t=3s, giving ArrivalPortalRing a clean start */}
-              <motion.div
-                className="absolute rounded-full"
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  background: "radial-gradient(circle, #ffffff, #b44aff, #ff2d7b, transparent)",
-                  boxShadow: "0 0 80px 50px rgba(180,74,255,0.8), 0 0 160px 100px rgba(77,124,255,0.4)",
-                }}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: [0, 2, 500], opacity: [0, 1, 1, 0] }}
-                transition={{
-                  duration: 2.5,
-                  delay: 0.4,
-                  times: [0, 0.04, 0.6, 0.82],
-                  ease: "easeIn",
-                }}
-              />
             </motion.div>
           )}
 

@@ -163,6 +163,14 @@ Retro synth + modern beats + phonk + epic space (Hans Zimmer F1 x Resonance "Hom
 - [x] `Preloader.tsx` Stage 3 fix: warp fades out by t=2.5s (times [0, 0.04, 0.6, 0.82]); `exit={{ opacity: 0, scale: 1.1 }}` = "breaking through" feel
 - [x] Full cinematic sequence: warp fades → dark → portal ring expands from center (neon glow) → hero zooms in from center → dynamic elements spawn after arrival
 
+### ✅ Completed (Phase 3i — Preloader Warp Overhaul: LAUNCH Zoom + Background Loading)
+- [x] **LAUNCH zoom**: warp phase opens with "LAUNCH" text (`18vw` base font, large rasterisation) scaling 1→4.5× in 0.75s — crisp, no pixelation, fills screen
+- [x] **Two-stage warp**: zoom (0–750ms) → wormhole (750ms–3000ms). `warpStage` state switches between them
+- [x] **Background content loading**: `onStart()` fires at 750ms (when LAUNCH fills screen), not on YES click — content mounts silently behind preloader during the 2.25s wormhole window
+- [x] **Wormhole**: 50 streaks + 5 rings + white spark — lightweight, same as Phase 3g perf fix
+- [x] **page.tsx**: `contentMounted` (fires on `onStart`) + `revealed` (fires on `onComplete`) states separate mounting from revealing — `clipPath: circle(0%)` keeps content invisible until reveal, `pointerEvents: none` while hidden
+- [x] Full sequence: YES! → response → countdown → LAUNCH zooms → screen covered → content mounts in BG → wormhole plays → onComplete → clip-path reveal → portal ring → hero
+
 ### ✅ Completed (Phase 4a — Lenis Smooth Scroll)
 - [x] `src/components/SmoothScroll.tsx` — client component wrapping children with Lenis v1.3
 - [x] Exponential easing: `Math.min(1, 1.001 - Math.pow(2, -10 * t))` for fast-start, smooth-decel feel
