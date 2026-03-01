@@ -47,6 +47,7 @@ interface Astronaut {
   endY: number;
   duration: number;
   rotation: number;
+  totalSpin: number;
   suitColor: "white" | "orange" | "black";
 }
 
@@ -328,7 +329,8 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
       endX: fromRight ? -10 : 110,
       endY: 20 + Math.random() * 45,
       duration: 22 + Math.random() * 14,
-      rotation: -15 + Math.random() * 30,
+      rotation: Math.random() * 360,
+      totalSpin: (Math.random() > 0.5 ? 1 : -1) * (270 + Math.random() * 270),
       suitColor,
     };
     setAstronauts((prev) => [...prev, astro]);
@@ -531,8 +533,8 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
               animate={{
                 left: `${astro.endX}%`,
                 top: `${astro.endY}%`,
-                opacity: [0, 0.9, 0.9, 0],
-                rotate: astro.rotation + 15,
+                opacity: [0, 0.675, 0.675, 0],
+                rotate: astro.rotation + astro.totalSpin,
               }}
               transition={{ duration: astro.duration, ease: "linear" }}
             >
