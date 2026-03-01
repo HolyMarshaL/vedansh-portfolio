@@ -132,6 +132,34 @@ Retro synth + modern beats + phonk + epic space (Hans Zimmer F1 x Resonance "Hom
 - [x] Mobile astronaut spawn rate matched to planets: every 18-27s (was 48-66s)
 - [x] Mobile spawn sequence: meteor@0s → astronaut@3s → meteor@3.6s → satellite@7.2s → planet@11s
 
+### ✅ Completed (Phase 3e — Click-to-Shoot Interaction)
+- [x] Satellites and astronauts are clickable/tappable (Framer Motion `onTap`)
+- [x] On tap: element shoots off in a random direction as if "hit" by the click
+- [x] Random blast direction: random angle (0-360°), projects 170% viewport-distance to guarantee offscreen exit
+- [x] `hitMap: Map<number, HitTarget>` stores computed blast direction + spin per element
+- [x] Impact flash: scale pulses to 1.3x for 30ms on impact, then returns to normal size (1.5s total)
+- [x] Physics model: constant velocity (linear ease on position = Newton 1st law), conserved angular momentum (linear ease on rotation), perspective fade-out at 85-100% of journey
+- [x] Outer container stays `pointer-events-none`; individual elements are `pointer-events-auto cursor-pointer`
+- [x] `handleHit` ignores repeat taps; cleans up element from state after 18.5s
+- [x] Committed and pushed (commits 3d463ca → 0f428b1)
+
+### 🐛 Known Bug — Click-to-Shoot Still Too Fast (PENDING FIX)
+**Symptom**: On click, objects shoot off at "bullet speed" — nearly instantaneous.
+**Root cause (identified, not yet fixed)**:
+In Framer Motion, per-property transition overrides like `left: { ease: "linear" }` do NOT inherit `duration` from the parent transition object. They fall back to Framer Motion's default (~0.3s). So despite `duration: 17.5` being set on the parent, `left`, `top`, and `rotate` are each animating in ~0.3s — the element jumps offscreen nearly instantly. The `overflow-hidden` on the container then clips it, making it appear to vanish immediately. Only `opacity` (which has no per-property object) correctly uses the 17.5s duration.
+
+**Planned fix**: Explicitly add `duration: 17.5` (and any `delay`) to each per-property override:
+```js
+transition={isHit ? {
+  duration: 17.5,
+  left:   { ease: "linear", duration: 17.5 },
+  top:    { ease: "linear", duration: 17.5 },
+  rotate: { ease: "linear", duration: 17.5 },
+  scale:  { duration: 1.5, times: [0, 0.02, 1], ease: "easeOut" },
+  opacity: { times: [0, 0.85, 1], ease: "linear", duration: 17.5 },
+} : { ... }}
+```
+
 ### 🔲 TODO (Phase 4+)
 - [ ] Lenis smooth scroll integration
 - [ ] GSAP ScrollTrigger for section entrance animations
