@@ -42,7 +42,7 @@ Cyan (#00f0ff) kept as secondary accent only.
 
 ## Dynamic Hero Elements
 
-- **Meteors**: Single streak per spawn (not showers), clean linear path upper-right → lower-left, gradient tail + bright glowing head, every 8-15s. Angle 200-240°, calculated via `cos/sin` translate vector.
+- **Meteors**: Single streak per spawn (not showers), clean linear path upper-right → lower-left, gradient tail + bright glowing head, every 8-15s. Angle 120-160° (standard math), spawns immediately on mount then recurring. `cos/sin` translate vector with Framer Motion `x`/`y` (DOM coords: positive y = down).
 - **Passing planets**: Large glowing spheres with rings, subtle opacity (~25%), every 20-32s
 - **Satellites** (3 models, random):
   - **ISS** — dual solar panel arrays, cylindrical body, port window, dish antenna, blinking pink beacon
@@ -104,6 +104,13 @@ Retro synth + modern beats + phonk + epic space (Hans Zimmer F1 x Resonance "Hom
 - [x] Fixed TypeScript build error (`bufferAttribute` missing `args` prop for Vercel strict compile)
 - [x] Deployed to GitHub: https://github.com/HolyMarshaL/vedansh-portfolio
 - [x] Deployed to Vercel: https://vedansh-portfolio-opal.vercel.app (auto-deploys on push to master)
+
+### ✅ Completed (Phase 3b — Meteor Bugfix)
+- [x] Fixed meteor angle: was 200-240° which made `sin()` negative → meteor flew UP off-screen (never visible)
+- [x] Corrected to 120-160°: `cos` negative (moves left) + `sin` positive (moves DOWN in DOM/Framer Motion) → upper-right → lower-left diagonal ✓
+- [x] Meteor now spawns immediately on component mount (no 3s wait), then every 8-15s recurring
+- [x] Start position changed from above-viewport (-5%) to within-viewport top (2-22%) for guaranteed visibility
+- [x] Speed: 1.4-2.2s (slightly slower for better visibility), distance: 800-1200px
 
 ### 🔲 TODO (Phase 4+)
 - [ ] Lenis smooth scroll integration
