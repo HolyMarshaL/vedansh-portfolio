@@ -257,16 +257,18 @@ export default function HeroDynamicElements() {
 
   // Single meteor — clean linear path with glowing trail
   const spawnMeteor = useCallback(() => {
-    const angle = 200 + Math.random() * 40; // upper-right to lower-left
+    // 120-160°: cos is negative (moves LEFT), sin is positive (moves DOWN in DOM)
+    // This sends the meteor from upper-right → lower-left diagonally across the screen
+    const angle = 120 + Math.random() * 40;
     const meteor: Meteor = {
       id: idRef.current++,
-      startX: 45 + Math.random() * 50, // right side of screen
-      startY: -5 - Math.random() * 5,  // above viewport
+      startX: 50 + Math.random() * 45, // right half of screen
+      startY: 2 + Math.random() * 20,  // near the top of the viewport (visible)
       angle,
-      speed: 0.9 + Math.random() * 0.7,
-      tailLength: 100 + Math.random() * 100,
+      speed: 1.4 + Math.random() * 0.8,
+      tailLength: 120 + Math.random() * 100,
       color: METEOR_COLORS[Math.floor(Math.random() * METEOR_COLORS.length)],
-      distance: 700 + Math.random() * 400,
+      distance: 800 + Math.random() * 400,
     };
     setMeteors((prev) => [...prev, meteor]);
     setTimeout(() => {
@@ -337,8 +339,9 @@ export default function HeroDynamicElements() {
 
   // ====== SPAWNING LOOP ======
   useEffect(() => {
-    // Staggered initial spawns
-    const t1 = setTimeout(spawnMeteor, 3000);
+    // Spawn first meteor immediately, then stagger others
+    spawnMeteor();
+    const t1 = setTimeout(spawnMeteor, 5000);
     const t2 = setTimeout(spawnSatellite, 9000);
     const t3 = setTimeout(spawnPlanet, 15000);
 
