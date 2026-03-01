@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Preloader from "@/components/preloader/Preloader";
+import SmoothScroll from "@/components/SmoothScroll";
 import Hero from "@/components/hero/Hero";
 import MissionControl from "@/components/mission-control/MissionControl";
 import ConstellationMap from "@/components/constellation/ConstellationMap";
@@ -33,8 +34,9 @@ export default function Home() {
       {/* Preloader */}
       {!launched && <Preloader onComplete={() => setLaunched(true)} />}
 
-      {/* Main content — only rendered after launch */}
+      {/* Main content — only rendered after launch, wrapped in Lenis smooth scroll */}
       {showContent && (
+        <SmoothScroll>
         <div>
           <Hero />
 
@@ -65,6 +67,7 @@ export default function Home() {
 
           <Footer />
         </div>
+        </SmoothScroll>
       )}
     </main>
   );

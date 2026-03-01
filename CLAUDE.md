@@ -143,25 +143,27 @@ Retro synth + modern beats + phonk + epic space (Hans Zimmer F1 x Resonance "Hom
 - [x] `handleHit` ignores repeat taps; cleans up element from state after 18.5s
 - [x] Committed and pushed (commits 3d463ca → 0f428b1)
 
-### 🐛 Known Bug — Click-to-Shoot Still Too Fast (PENDING FIX)
-**Symptom**: On click, objects shoot off at "bullet speed" — nearly instantaneous.
-**Root cause (identified, not yet fixed)**:
-In Framer Motion, per-property transition overrides like `left: { ease: "linear" }` do NOT inherit `duration` from the parent transition object. They fall back to Framer Motion's default (~0.3s). So despite `duration: 17.5` being set on the parent, `left`, `top`, and `rotate` are each animating in ~0.3s — the element jumps offscreen nearly instantly. The `overflow-hidden` on the container then clips it, making it appear to vanish immediately. Only `opacity` (which has no per-property object) correctly uses the 17.5s duration.
+### ✅ Completed (Phase 3f — Click-to-Shoot Speed Fix)
+- [x] Fixed Framer Motion per-property transition bug: explicitly set `duration` on every property override (`left`, `top`, `rotate`, `opacity`) — they do NOT inherit from parent transition object
+- [x] Blast-off duration set to **10.48s** (13.1s baseline × 0.8 = 20% speed boost on click)
+- [x] Cleanup timeout updated to 11400ms to match shorter animation
+- [x] Both satellites and astronauts use the same hit transition duration
 
-**Planned fix**: Explicitly add `duration: 17.5` (and any `delay`) to each per-property override:
-```js
-transition={isHit ? {
-  duration: 17.5,
-  left:   { ease: "linear", duration: 17.5 },
-  top:    { ease: "linear", duration: 17.5 },
-  rotate: { ease: "linear", duration: 17.5 },
-  scale:  { duration: 1.5, times: [0, 0.02, 1], ease: "easeOut" },
-  opacity: { times: [0, 0.85, 1], ease: "linear", duration: 17.5 },
-} : { ... }}
-```
+### ✅ Completed (Phase 3g — Preloader Polish)
+- [x] Replaced two "YES/YES" buttons with single centered **"YES!"** CTA (pink→purple→blue gradient, shimmer sweep, glow pulse)
+- [x] Added **mouse parallax**: particles layer moves opposite to cursor (depth), content moves with cursor (15px/10px offsets)
+- [x] Added **meteors** to preloader (same pattern as HeroDynamicElements — gradient tail + glowing head, spawns on mount then every 4-7s)
+- [x] Warp animation **10x crazier**: 250 streaks (vs 60) in 3 tiers (thin/bold/mega-beam), 10 expanding tunnel rings, 3-stage central burst (spark → halo → full-screen engulf), 4 rapid-fire color flash overlays, nebula background color shift, warp duration extended to 3s
+
+### ✅ Completed (Phase 4a — Lenis Smooth Scroll)
+- [x] `src/components/SmoothScroll.tsx` — client component wrapping children with Lenis v1.3
+- [x] Exponential easing: `Math.min(1, 1.001 - Math.pow(2, -10 * t))` for fast-start, smooth-decel feel
+- [x] RAF loop manually driven (for future GSAP ScrollTrigger wiring via `lenis.on("scroll", ScrollTrigger.update)`)
+- [x] Wraps main content in `page.tsx` — activates only after preloader completes
+- [x] Lenis destroyed on unmount to prevent memory leaks
 
 ### 🔲 TODO (Phase 4+)
-- [ ] Lenis smooth scroll integration
+- [ ] Lenis smooth scroll integration (done — see Phase 4a)
 - [ ] GSAP ScrollTrigger for section entrance animations
 - [ ] Sound design (Howler.js) — retro synth, section shifts, UI sounds
 - [ ] Gamification system (7 achievements, progress ring, easter eggs)

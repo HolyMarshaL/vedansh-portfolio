@@ -360,7 +360,7 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
       };
       return new Map([...prev, [id, target]]);
     });
-    // Remove element after blast-off animation finishes (17.5s anim + buffer)
+    // Remove element after blast-off animation finishes (10.48s anim + buffer)
     setTimeout(() => {
       setSatellites((prev) => prev.filter((s) => s.id !== id));
       setAstronauts((prev) => prev.filter((a) => a.id !== id));
@@ -369,7 +369,7 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
         next.delete(id);
         return next;
       });
-    }, 14200);
+    }, 11400);
   }, []);
 
   // ====== SPAWNING LOOP ======
@@ -561,11 +561,12 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
               transition={isHit ? {
                 // Explicitly set duration on every per-property override —
                 // Framer Motion does NOT inherit parent duration into property objects
-                left:    { ease: "linear", duration: 13.1 },
-                top:     { ease: "linear", duration: 13.1 },
-                rotate:  { ease: "linear", duration: 13.1 },
+                // 20% speed boost on hit (13.1 * 0.8 = 10.48)
+                left:    { ease: "linear", duration: 10.48 },
+                top:     { ease: "linear", duration: 10.48 },
+                rotate:  { ease: "linear", duration: 10.48 },
                 scale:   { duration: 1.5, times: [0, 0.02, 1], ease: "easeOut" },
-                opacity: { times: [0, 0.85, 1], ease: "linear", duration: 13.1 },
+                opacity: { times: [0, 0.85, 1], ease: "linear", duration: 10.48 },
               } : {
                 duration: sat.duration,
                 ease: "linear",
@@ -617,11 +618,12 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
               transition={isHit ? {
                 // Explicitly set duration on every per-property override —
                 // Framer Motion does NOT inherit parent duration into property objects
-                left:    { ease: "linear", duration: 13.1 },
-                top:     { ease: "linear", duration: 13.1 },
-                rotate:  { ease: "linear", duration: 13.1 },
+                // 20% speed boost on hit (13.1 * 0.8 = 10.48)
+                left:    { ease: "linear", duration: 10.48 },
+                top:     { ease: "linear", duration: 10.48 },
+                rotate:  { ease: "linear", duration: 10.48 },
                 scale:   { duration: 1.5, times: [0, 0.02, 1], ease: "easeOut" },
-                opacity: { times: [0, 0.85, 1], ease: "linear", duration: 13.1 },
+                opacity: { times: [0, 0.85, 1], ease: "linear", duration: 10.48 },
               } : {
                 duration: astro.duration,
                 ease: "linear",
