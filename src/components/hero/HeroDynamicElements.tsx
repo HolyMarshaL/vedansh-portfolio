@@ -523,7 +523,7 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
             <motion.div
               key={`astro-${astro.id}`}
               className="absolute"
-              style={isMobile ? { transform: "scale(0.75)", transformOrigin: "top left" } : undefined}
+              style={{ transform: isMobile ? "scale(0.6)" : "scale(0.8)", transformOrigin: "top left" }}
               initial={{
                 left: `${astro.startX}%`,
                 top: `${astro.startY}%`,
