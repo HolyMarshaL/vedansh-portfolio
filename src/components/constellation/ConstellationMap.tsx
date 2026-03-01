@@ -79,13 +79,13 @@ const CONSTELLATION_POSITIONS: Record<
   },
   wanderer: {
     x: 50,
-    y: 82,
+    y: 43,
     stars: [
-      { x: 46, y: 78 },
-      { x: 52, y: 76 },
-      { x: 55, y: 82 },
-      { x: 49, y: 86 },
-      { x: 53, y: 88 },
+      { x: 46, y: 39 },
+      { x: 52, y: 37 },
+      { x: 55, y: 43 },
+      { x: 49, y: 47 },
+      { x: 53, y: 49 },
     ],
   },
 };
@@ -312,7 +312,7 @@ export default function ConstellationMap() {
           (hidden on mobile, visible on md+)
           ═══════════════════════════════════════════════ */}
       <div className="hidden md:block">
-        <div className="relative w-full max-w-5xl mx-auto aspect-[16/10] overflow-hidden">
+        <div className="relative w-full max-w-5xl mx-auto aspect-[16/10]">
           {/* Background stars */}
           {Array.from({ length: 100 }).map((_, i) => (
             <motion.div
