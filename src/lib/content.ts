@@ -162,6 +162,10 @@ export const SKILLS = {
     name: "The Mad Scientist",
     skills: ["AI Prompt Engineering", "Lottie Animation", "Framer Motion"],
   },
+  wanderer: {
+    name: "The Wanderer",
+    skills: ["Hiking", "Camping", "Nature Devotee", "Car Enthusiast", "Mountain Lover"],
+  },
 } as const;
 
 export const PHILOSOPHY = [

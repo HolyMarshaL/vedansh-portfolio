@@ -120,7 +120,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
         >
-          Sr. Product Designer
+          Commander Design
         </motion.p>
 
         <motion.p
@@ -151,7 +151,7 @@ export default function Hero() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.8 }}
         >
-          {["Figma", "Framer", "Adobe XD", "Lottie", "Mixpanel"].map(
+          {["Figma", "Framer", "Vibe Coding with AI", "Lottie", "Mixpanel"].map(
             (tool, i) => {
               const colors = ["#ff2d7b", "#b44aff", "#4d7cff", "#ff44cc", "#ff6b35"];
               const color = colors[i % colors.length];

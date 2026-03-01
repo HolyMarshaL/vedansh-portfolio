@@ -11,6 +11,7 @@ const CONSTELLATION_COLORS = [
   "#ff44cc",
   "#ff6b35",
   "#4d7cff",
+  "#00f0ff",
 ];
 
 const CONSTELLATION_POSITIONS: Record<
@@ -74,6 +75,17 @@ const CONSTELLATION_POSITIONS: Record<
       { x: 77, y: 60 },
       { x: 83, y: 63 },
       { x: 80, y: 70 },
+    ],
+  },
+  wanderer: {
+    x: 50,
+    y: 82,
+    stars: [
+      { x: 46, y: 78 },
+      { x: 52, y: 76 },
+      { x: 55, y: 82 },
+      { x: 49, y: 86 },
+      { x: 53, y: 88 },
     ],
   },
 };
@@ -142,7 +154,7 @@ export default function ConstellationMap() {
         >
           CONSTELLATIONS DISCOVERED:{" "}
           <span className="text-neon-pink font-bold">{discovered.size}</span>
-          /6
+          /7
         </p>
       </motion.div>
 
@@ -268,7 +280,7 @@ export default function ConstellationMap() {
 
         {/* All-discovered celebration */}
         <AnimatePresence>
-          {discovered.size === 6 && (
+          {discovered.size === 7 && (
             <motion.div
               className="mt-6 text-center py-4 rounded-xl"
               style={{
