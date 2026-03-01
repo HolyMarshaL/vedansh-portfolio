@@ -2,6 +2,7 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import Image from "next/image";
 import StatCounter from "./StatCounter";
 import { STATS, BIO } from "@/lib/content";
 
@@ -50,28 +51,24 @@ export default function MissionControl() {
           animate={isInView ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 1, delay: 0.2 }}
         >
-          {/* Holographic frame */}
+          {/* Holographic frame — portrait rectangle */}
           <div className="relative">
             <div
-              className="w-48 h-48 sm:w-56 sm:h-56 rounded-xl overflow-hidden scan-lines relative"
-              style={{
-                clipPath:
-                  "polygon(25% 0%, 75% 0%, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0% 75%, 0% 25%)",
-              }}
+              className="w-48 sm:w-56 rounded-xl overflow-hidden scan-lines relative"
+              style={{ height: "320px" }}
             >
-              {/* Placeholder avatar */}
-              <div className="w-full h-full bg-gradient-to-br from-neon-pink/20 via-nebula-blue to-neon-purple/20 flex items-center justify-center">
-                <span
-                  className="text-6xl font-bold gradient-text"
-                  style={{ fontFamily: "var(--font-space-grotesk)" }}
-                >
-                  VC
-                </span>
-              </div>
+              {/* Photo */}
+              <Image
+                src="/images/vedansh.png"
+                alt="Vedansh Chauhan"
+                fill
+                className="object-cover object-top"
+                priority
+              />
 
               {/* Scan line overlay */}
               <motion.div
-                className="absolute inset-0 bg-gradient-to-b from-neon-purple/5 to-transparent"
+                className="absolute inset-0 bg-gradient-to-b from-neon-purple/5 to-transparent pointer-events-none"
                 animate={{ y: ["-100%", "100%"] }}
                 transition={{
                   duration: 3,
@@ -80,14 +77,15 @@ export default function MissionControl() {
                 }}
                 style={{ height: "30%" }}
               />
+
+              {/* Bottom gradient fade */}
+              <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-space-black/60 to-transparent pointer-events-none" />
             </div>
 
             {/* Glow border */}
             <div
-              className="absolute inset-0 rounded-xl"
+              className="absolute inset-0 rounded-xl pointer-events-none"
               style={{
-                clipPath:
-                  "polygon(25% 0%, 75% 0%, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0% 75%, 0% 25%)",
                 boxShadow:
                   "0 0 15px rgba(180,74,255,0.3), inset 0 0 15px rgba(255,45,123,0.1)",
               }}
