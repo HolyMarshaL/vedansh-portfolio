@@ -343,14 +343,14 @@ export default function HeroDynamicElements({ isMobile = false }: { isMobile?: b
     spawnMeteor();
 
     if (isMobile) {
-      // ── Mobile: all elements, slightly less frequent
-      const t1 = setTimeout(spawnMeteor, 6000);
-      const t2 = setTimeout(spawnSatellite, 12000);
-      const t3 = setTimeout(spawnPlanet, 18000);
-      const meteorInterval = setInterval(spawnMeteor, 12000 + Math.random() * 8000);
-      const satInterval = setInterval(spawnSatellite, 30000 + Math.random() * 20000);
-      const planetInterval = setInterval(spawnPlanet, 30000 + Math.random() * 15000);
-      const astroInterval = setInterval(spawnAstronaut, 80000 + Math.random() * 30000);
+      // ── Mobile: all elements, +40% spawn rate (intervals × 0.6)
+      const t1 = setTimeout(spawnMeteor, 3600);
+      const t2 = setTimeout(spawnSatellite, 7200);
+      const t3 = setTimeout(spawnPlanet, 11000);
+      const meteorInterval = setInterval(spawnMeteor, 7200 + Math.random() * 4800);
+      const satInterval = setInterval(spawnSatellite, 18000 + Math.random() * 12000);
+      const planetInterval = setInterval(spawnPlanet, 18000 + Math.random() * 9000);
+      const astroInterval = setInterval(spawnAstronaut, 48000 + Math.random() * 18000);
       return () => {
         clearTimeout(t1);
         clearTimeout(t2);
