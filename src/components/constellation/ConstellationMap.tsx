@@ -60,12 +60,12 @@ const CONSTELLATION_POSITIONS: Record<
   },
   analyst: {
     x: 55,
-    y: 60,
+    y: 74,
     stars: [
-      { x: 52, y: 55 },
-      { x: 58, y: 58 },
-      { x: 54, y: 64 },
-      { x: 60, y: 62 },
+      { x: 52, y: 69 },
+      { x: 58, y: 72 },
+      { x: 54, y: 78 },
+      { x: 60, y: 76 },
     ],
   },
   builder: {
