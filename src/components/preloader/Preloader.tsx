@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import WarpCanvas from "./WarpCanvas";
 
 type Phase = "question" | "response" | "countdown" | "warp" | "done";
 
@@ -29,7 +30,6 @@ const TERMINAL_LINES = [
 ];
 
 const METEOR_COLORS = ["#ff2d7b", "#b44aff", "#4d7cff", "#ff44cc", "#ffffff"];
-const WARP_COLORS   = ["#ff2d7b", "#b44aff", "#4d7cff", "#ff44cc", "#ff6b35", "#ffffff"];
 const PARTICLE_COLORS = [
   "rgba(255,45,123,0.4)",
   "rgba(180,74,255,0.4)",
@@ -431,71 +431,15 @@ export default function Preloader({ onStart, onComplete }: PreloaderProps) {
             </motion.div>
           )}
 
-          {/* ── PHASE 4: WORMHOLE — zoom is handled by overlay above ── */}
+          {/* ── PHASE 4: WORMHOLE — single canvas, one GPU layer ── */}
           {phase === "warp" && (
             <motion.div
               key="warp"
-              className="fixed inset-0 flex items-center justify-center overflow-hidden"
+              className="fixed inset-0"
               initial={{ opacity: 1 }}
               animate={{ opacity: 1 }}
             >
-              {/* Nebula glow */}
-              <motion.div
-                className="absolute inset-0"
-                animate={{
-                  background: [
-                    "radial-gradient(ellipse at center, #b44aff15 0%, transparent 60%)",
-                    "radial-gradient(ellipse at center, #ffffff35 0%, #ff2d7b18 40%, transparent 70%)",
-                  ],
-                }}
-                transition={{ duration: 1.3, ease: "easeIn" }}
-              />
-
-              {/* 50 warp streaks — same count, tighter timing */}
-              {Array.from({ length: 50 }).map((_, i) => {
-                const angle = (i / 50) * 360;
-                const color = WARP_COLORS[i % WARP_COLORS.length];
-                const delay = (i / 50) * 0.2;
-                return (
-                  <motion.div
-                    key={i}
-                    className="absolute"
-                    style={{
-                      height: "1px",
-                      width: "2px",
-                      left: "50%",
-                      top: "50%",
-                      transformOrigin: "left center",
-                      rotate: `${angle}deg`,
-                      background: `linear-gradient(90deg, transparent 0%, ${color}40 30%, ${color} 100%)`,
-                    }}
-                    initial={{ width: "2px", opacity: 0 }}
-                    animate={{ width: ["2px", `${65 + (i % 20)}vw`], opacity: [0, 0.7, 0] }}
-                    transition={{ duration: 1.3, delay, ease: [0.1, 0.75, 0.9, 1], times: [0, 0.2, 1] }}
-                  />
-                );
-              })}
-
-              {/* 5 tunnel rings — same count, tighter timing */}
-              {Array.from({ length: 5 }).map((_, i) => (
-                <motion.div
-                  key={`ring-${i}`}
-                  className="absolute rounded-full"
-                  style={{ width: "10px", height: "10px", border: `1px solid ${WARP_COLORS[i % WARP_COLORS.length]}70` }}
-                  initial={{ scale: 0, opacity: 0.8 }}
-                  animate={{ scale: [0, 60 + i * 10], opacity: [0.8, 0] }}
-                  transition={{ duration: 1.3, delay: i * 0.1, ease: "easeOut" }}
-                />
-              ))}
-
-              {/* Central white spark */}
-              <motion.div
-                className="absolute rounded-full"
-                style={{ width: "8px", height: "8px", background: "white", boxShadow: "0 0 16px 8px rgba(255,255,255,0.9)" }}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: [0, 2, 0.8], opacity: [0, 1, 0] }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-              />
+              <WarpCanvas duration={1300} />
             </motion.div>
           )}
 
