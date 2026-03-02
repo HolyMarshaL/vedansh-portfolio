@@ -46,9 +46,13 @@ export default function Preloader({ onStart, onComplete }: PreloaderProps) {
   >([]);
   const [meteors, setMeteors] = useState<PreloaderMeteor[]>([]);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [warpStage, setWarpStage] = useState<"zoom" | "wormhole">("zoom");
+  const [launchZoomActive, setLaunchZoomActive] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const meteorIdRef = useRef(0);
+  const onStartRef = useRef(onStart);
+  const onCompleteRef = useRef(onComplete);
+  onStartRef.current = onStart;
+  onCompleteRef.current = onComplete;
 
   // Generate floating particles on mount
   useEffect(() => {
@@ -116,7 +120,6 @@ export default function Preloader({ onStart, onComplete }: PreloaderProps) {
         setCountdown((prev) => {
           if (prev <= 1) {
             if (intervalRef.current) clearInterval(intervalRef.current);
-            setTimeout(() => setPhase("warp"), 300);
             return 0;
           }
           return prev - 1;
@@ -130,24 +133,24 @@ export default function Preloader({ onStart, onComplete }: PreloaderProps) {
     };
   }, [phase]);
 
-  // Warp: two-stage sequence
-  // 750ms  — LAUNCH fills screen → switch to wormhole + mount content in background
-  // 3000ms — wormhole ends → reveal page
+  // When countdown reaches 0 → activate LAUNCH zoom overlay + mount content
+  useEffect(() => {
+    if (countdown !== 0 || phase !== "countdown") return;
+    setLaunchZoomActive(true);
+    onStartRef.current(); // mount content in background NOW
+    const warpTimer = setTimeout(() => setPhase("warp"), 250);
+    return () => clearTimeout(warpTimer);
+  }, [countdown, phase]);
+
+  // Warp phase: wormhole only (zoom is handled by the launchZoomActive overlay)
   useEffect(() => {
     if (phase !== "warp") return;
-    const zoomTimer = setTimeout(() => {
-      setWarpStage("wormhole");
-      onStart(); // content mounts silently while wormhole plays
-    }, 750);
     const doneTimer = setTimeout(() => {
       setPhase("done");
-      onComplete();
-    }, 3000);
-    return () => {
-      clearTimeout(zoomTimer);
-      clearTimeout(doneTimer);
-    };
-  }, [phase, onComplete, onStart]);
+      onCompleteRef.current();
+    }, 1900);
+    return () => clearTimeout(doneTimer);
+  }, [phase]);
 
   if (phase === "done") return null;
 
@@ -355,11 +358,14 @@ export default function Preloader({ onStart, onComplete }: PreloaderProps) {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4 }}
             >
+              {/* Mission text — fades out when zoom starts */}
               <motion.div
                 className="flex flex-col items-center gap-2"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                animate={{
+                  opacity: launchZoomActive ? 0 : 1,
+                  y: launchZoomActive ? -10 : 0,
+                }}
+                transition={{ duration: launchZoomActive ? 0.2 : 0.5 }}
               >
                 <p className="text-xs sm:text-sm tracking-[0.3em] text-neon-purple/60 uppercase" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
                   Mission: VEDANSH.SPACE
@@ -381,26 +387,35 @@ export default function Preloader({ onStart, onComplete }: PreloaderProps) {
                     T-{countdown}
                   </span>
                 ) : (
-                  <motion.span
-                    className="text-[15vw] sm:text-[12vw] font-bold leading-none neon-text-pink"
-                    style={{ fontFamily: "var(--font-space-grotesk)" }}
-                    initial={{ scale: 0.8 }}
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 0.3 }}
+                  /* Matches zoom overlay starting state exactly — invisible swap */
+                  <span
+                    className="neon-text-pink font-bold whitespace-nowrap leading-none"
+                    style={{
+                      fontFamily: "var(--font-space-grotesk)",
+                      fontSize: "clamp(80px, 18vw, 200px)",
+                    }}
                   >
                     LAUNCH
-                  </motion.span>
+                  </span>
                 )}
-                <motion.div
-                  key={`ring-${countdown}`}
-                  className="absolute inset-0 rounded-full border-2 border-neon-pink/30"
-                  initial={{ scale: 0.8, opacity: 0.8 }}
-                  animate={{ scale: 3, opacity: 0 }}
-                  transition={{ duration: 1, ease: "easeOut" }}
-                />
+                {!launchZoomActive && (
+                  <motion.div
+                    key={`ring-${countdown}`}
+                    className="absolute inset-0 rounded-full border-2 border-neon-pink/30"
+                    initial={{ scale: 0.8, opacity: 0.8 }}
+                    animate={{ scale: 3, opacity: 0 }}
+                    transition={{ duration: 1, ease: "easeOut" }}
+                  />
+                )}
               </motion.div>
 
-              <div className="text-left max-w-md w-full" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
+              {/* Terminal lines — fade out when zooming */}
+              <motion.div
+                className="text-left max-w-md w-full"
+                style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+                animate={{ opacity: launchZoomActive ? 0 : 1 }}
+                transition={{ duration: 0.2 }}
+              >
                 {terminalLines.map((line, i) => (
                   <motion.p
                     key={i}
@@ -412,11 +427,11 @@ export default function Preloader({ onStart, onComplete }: PreloaderProps) {
                     {line}
                   </motion.p>
                 ))}
-              </div>
+              </motion.div>
             </motion.div>
           )}
 
-          {/* ── PHASE 4: LAUNCH ZOOM → WORMHOLE ── */}
+          {/* ── PHASE 4: WORMHOLE — zoom is handled by overlay above ── */}
           {phase === "warp" && (
             <motion.div
               key="warp"
@@ -424,103 +439,93 @@ export default function Preloader({ onStart, onComplete }: PreloaderProps) {
               initial={{ opacity: 1 }}
               animate={{ opacity: 1 }}
             >
+              {/* Nebula glow */}
+              <motion.div
+                className="absolute inset-0"
+                animate={{
+                  background: [
+                    "radial-gradient(ellipse at center, #b44aff15 0%, transparent 60%)",
+                    "radial-gradient(ellipse at center, #ffffff35 0%, #ff2d7b18 40%, transparent 70%)",
+                  ],
+                }}
+                transition={{ duration: 1.3, ease: "easeIn" }}
+              />
 
-              {/* ── STAGE A: LAUNCH text zooms to fill screen (0 → 750ms) ── */}
-              {warpStage === "zoom" && (
-                <motion.div
-                  key="launch-zoom"
-                  className="relative select-none pointer-events-none"
-                  style={{ transformOrigin: "center center", willChange: "transform" }}
-                  initial={{ scale: 1, opacity: 0 }}
-                  animate={{ scale: [1, 1, 4.5], opacity: [0, 1, 1] }}
-                  transition={{
-                    duration: 0.75,
-                    times: [0, 0.08, 1],
-                    ease: [0.5, 0, 0.85, 1],
-                  }}
-                >
-                  {/* Large base font so 4.5× scale is crisp — rasterised at ~230px */}
-                  <span
-                    className="neon-text-pink font-bold whitespace-nowrap"
+              {/* 50 warp streaks — same count, tighter timing */}
+              {Array.from({ length: 50 }).map((_, i) => {
+                const angle = (i / 50) * 360;
+                const color = WARP_COLORS[i % WARP_COLORS.length];
+                const delay = (i / 50) * 0.2;
+                return (
+                  <motion.div
+                    key={i}
+                    className="absolute"
                     style={{
-                      fontFamily: "var(--font-space-grotesk)",
-                      fontSize: "clamp(80px, 18vw, 200px)",
-                      lineHeight: 1,
-                      display: "block",
+                      height: "1px",
+                      width: "2px",
+                      left: "50%",
+                      top: "50%",
+                      transformOrigin: "left center",
+                      rotate: `${angle}deg`,
+                      background: `linear-gradient(90deg, transparent 0%, ${color}40 30%, ${color} 100%)`,
                     }}
-                  >
-                    LAUNCH
-                  </span>
-                </motion.div>
-              )}
-
-              {/* ── STAGE B: Wormhole (750ms → 3000ms) — content loads in background ── */}
-              {warpStage === "wormhole" && (
-                <>
-                  {/* Nebula glow */}
-                  <motion.div
-                    className="absolute inset-0"
-                    animate={{
-                      background: [
-                        "radial-gradient(ellipse at center, #b44aff15 0%, transparent 60%)",
-                        "radial-gradient(ellipse at center, #ffffff35 0%, #ff2d7b18 40%, transparent 70%)",
-                      ],
-                    }}
-                    transition={{ duration: 2.2, ease: "easeIn" }}
+                    initial={{ width: "2px", opacity: 0 }}
+                    animate={{ width: ["2px", `${65 + (i % 20)}vw`], opacity: [0, 0.7, 0] }}
+                    transition={{ duration: 1.3, delay, ease: [0.1, 0.75, 0.9, 1], times: [0, 0.2, 1] }}
                   />
+                );
+              })}
 
-                  {/* 50 warp streaks */}
-                  {Array.from({ length: 50 }).map((_, i) => {
-                    const angle = (i / 50) * 360;
-                    const color = WARP_COLORS[i % WARP_COLORS.length];
-                    const delay = (i / 50) * 0.35;
-                    return (
-                      <motion.div
-                        key={i}
-                        className="absolute"
-                        style={{
-                          height: "1px",
-                          width: "2px",
-                          left: "50%",
-                          top: "50%",
-                          transformOrigin: "left center",
-                          rotate: `${angle}deg`,
-                          background: `linear-gradient(90deg, transparent 0%, ${color}40 30%, ${color} 100%)`,
-                        }}
-                        initial={{ width: "2px", opacity: 0 }}
-                        animate={{ width: ["2px", `${65 + (i % 20)}vw`], opacity: [0, 0.7, 0] }}
-                        transition={{ duration: 2.2, delay, ease: [0.1, 0.75, 0.9, 1], times: [0, 0.2, 1] }}
-                      />
-                    );
-                  })}
+              {/* 5 tunnel rings — same count, tighter timing */}
+              {Array.from({ length: 5 }).map((_, i) => (
+                <motion.div
+                  key={`ring-${i}`}
+                  className="absolute rounded-full"
+                  style={{ width: "10px", height: "10px", border: `1px solid ${WARP_COLORS[i % WARP_COLORS.length]}70` }}
+                  initial={{ scale: 0, opacity: 0.8 }}
+                  animate={{ scale: [0, 60 + i * 10], opacity: [0.8, 0] }}
+                  transition={{ duration: 1.3, delay: i * 0.1, ease: "easeOut" }}
+                />
+              ))}
 
-                  {/* 5 tunnel rings */}
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <motion.div
-                      key={`ring-${i}`}
-                      className="absolute rounded-full"
-                      style={{ width: "10px", height: "10px", border: `1px solid ${WARP_COLORS[i % WARP_COLORS.length]}70` }}
-                      initial={{ scale: 0, opacity: 0.8 }}
-                      animate={{ scale: [0, 60 + i * 10], opacity: [0.8, 0] }}
-                      transition={{ duration: 2.2, delay: i * 0.18, ease: "easeOut" }}
-                    />
-                  ))}
-
-                  {/* Central white spark */}
-                  <motion.div
-                    className="absolute rounded-full"
-                    style={{ width: "8px", height: "8px", background: "white", boxShadow: "0 0 16px 8px rgba(255,255,255,0.9)" }}
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: [0, 2, 0.8], opacity: [0, 1, 0] }}
-                    transition={{ duration: 0.4, ease: "easeOut" }}
-                  />
-                </>
-              )}
-
+              {/* Central white spark */}
+              <motion.div
+                className="absolute rounded-full"
+                style={{ width: "8px", height: "8px", background: "white", boxShadow: "0 0 16px 8px rgba(255,255,255,0.9)" }}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: [0, 2, 0.8], opacity: [0, 1, 0] }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              />
             </motion.div>
           )}
 
         </AnimatePresence>
+
+        {/* ── LAUNCH ZOOM OVERLAY — sits on top of everything, seamless from countdown ── */}
+        {/* This is the ONLY zoom element — no separate "static LAUNCH" then "zooming LAUNCH". */}
+        {/* It starts at scale 1 (matching the countdown LAUNCH text exactly) and continuously */}
+        {/* scales to 8× to guarantee full-screen coverage before fading to reveal wormhole. */}
+        {launchZoomActive && (
+          <motion.div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+            <motion.span
+              className="neon-text-pink font-bold whitespace-nowrap select-none"
+              style={{
+                fontFamily: "var(--font-space-grotesk)",
+                fontSize: "clamp(80px, 18vw, 200px)",
+                lineHeight: 1,
+                willChange: "transform, opacity",
+              }}
+              initial={{ scale: 1, opacity: 1 }}
+              animate={{ scale: 8, opacity: [1, 1, 1, 0] }}
+              transition={{
+                scale: { duration: 1.2, ease: [0.35, 0, 0.65, 1] },
+                opacity: { duration: 1.2, times: [0, 0.55, 0.82, 1], ease: "easeIn" },
+              }}
+            >
+              LAUNCH
+            </motion.span>
+          </motion.div>
+        )}
       </motion.div>
     </AnimatePresence>
   );
