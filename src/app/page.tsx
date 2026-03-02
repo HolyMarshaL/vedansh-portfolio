@@ -49,11 +49,11 @@ export default function Home() {
           {/* Clip-path stays circle(0%) until revealed — content is mounted but
               invisible, giving Three.js time to initialise while preloader runs */}
           <motion.div
-            initial={{ clipPath: "circle(0% at 50% 50%)", scale: 0.88 }}
+            initial={{ clipPath: "circle(0% at 50% 50%)" }}
             animate={
               revealed
-                ? { clipPath: "circle(150% at 50% 50%)", scale: 1 }
-                : { clipPath: "circle(0% at 50% 50%)", scale: 0.88 }
+                ? { clipPath: "circle(150% at 50% 50%)" }
+                : { clipPath: "circle(0% at 50% 50%)" }
             }
             transition={{ duration: 0.92, ease: [0.2, 0, 0.15, 1] }}
             onAnimationComplete={() => {
@@ -68,7 +68,7 @@ export default function Home() {
             }}
           >
             <div>
-              <Hero showDynamicElements={arrivalComplete} />
+              <Hero showDynamicElements={arrivalComplete} shouldAnimate={revealed} />
 
               <div className="h-px bg-gradient-to-r from-transparent via-neon-cyan/10 to-transparent" />
 

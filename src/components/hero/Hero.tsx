@@ -9,7 +9,13 @@ import HeroDynamicElements from "./HeroDynamicElements";
 import { useMousePosition } from "@/hooks/useMousePosition";
 import { useDeviceOrientation } from "@/hooks/useDeviceOrientation";
 
-export default function Hero({ showDynamicElements = true }: { showDynamicElements?: boolean }) {
+export default function Hero({
+  showDynamicElements = true,
+  shouldAnimate = true,
+}: {
+  showDynamicElements?: boolean;
+  shouldAnimate?: boolean;
+}) {
   const mouse = useMousePosition();
   const deviceOrientation = useDeviceOrientation();
   const [mounted, setMounted] = useState(false);
@@ -95,9 +101,9 @@ export default function Hero({ showDynamicElements = true }: { showDynamicElemen
         <motion.h1
           className="text-[13vw] sm:text-[8vw] md:text-[7vw] lg:text-[6vw] font-bold leading-[0.9] tracking-tight"
           style={{ fontFamily: "var(--font-space-grotesk)" }}
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+          initial={{ opacity: 0, scale: 0.82 }}
+          animate={shouldAnimate ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.82 }}
+          transition={{ duration: 1.1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         >
           <span className="block gradient-text-glow">VEDANSH</span>
           <span
@@ -116,22 +122,19 @@ export default function Hero({ showDynamicElements = true }: { showDynamicElemen
         <motion.p
           className="mt-4 sm:mt-6 text-sm sm:text-lg md:text-xl tracking-[0.2em] sm:tracking-[0.25em] text-star-white/70 uppercase"
           style={{ fontFamily: "var(--font-jetbrains-mono)" }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={shouldAnimate ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+          transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
         >
           Commander Design
         </motion.p>
 
         <motion.p
           className="mt-2 text-xs sm:text-base tracking-[0.12em] sm:tracking-[0.15em] neon-text-purple"
-          style={{
-            fontFamily: "var(--font-jetbrains-mono)",
-            opacity: 0.7,
-          }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.7 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
+          style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+          initial={{ opacity: 0, scale: 0.93 }}
+          animate={shouldAnimate ? { opacity: 0.7, scale: 1 } : { opacity: 0, scale: 0.93 }}
+          transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
           Building Digital Universes
         </motion.p>
@@ -140,16 +143,16 @@ export default function Hero({ showDynamicElements = true }: { showDynamicElemen
         <motion.div
           className="mt-6 sm:mt-8 h-[1px] bg-gradient-to-r from-transparent via-neon-pink/50 to-transparent"
           initial={{ width: 0 }}
-          animate={{ width: "200px" }}
-          transition={{ duration: 1.2, delay: 1.5 }}
+          animate={shouldAnimate ? { width: "200px" } : { width: 0 }}
+          transition={{ duration: 1.2, delay: 0.7 }}
         />
 
         {/* Floating tool icons */}
         <motion.div
           className="mt-6 sm:mt-8 flex flex-wrap justify-center gap-2 sm:gap-3 max-w-xs sm:max-w-none"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1.8 }}
+          animate={shouldAnimate ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.8, delay: 0.9 }}
         >
           {["Figma", "Framer", "Vibe Coding with AI", "Lottie", "Mixpanel"].map(
             (tool, i) => {
@@ -187,8 +190,8 @@ export default function Hero({ showDynamicElements = true }: { showDynamicElemen
       <motion.div
         className="absolute bottom-8 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 2.5 }}
+        animate={shouldAnimate ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 1, delay: 1.1 }}
       >
         <motion.p
           className="text-[9px] sm:text-[10px] tracking-[0.3em] text-neon-pink/40 uppercase"
